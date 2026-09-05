@@ -1,0 +1,13 @@
+{
+  "role_summary": "The Senior AI Engineer will own the end-to-end lifecycle of LLM features, including RAG pipelines, fine-tuning, and structured extraction, for legal and financial analyst software. Success means delivering monitored, cost-controlled, and rigorously evaluated model services directly to AWS production. Additionally, this hands-on role leads technical design discussions and mentors mid-level engineers on the growing AI team.",
+  "seniority": "senior",
+  "tone": "pragmatic, hands-on, quality-driven, collaborative, production-focused",
+  "top_priorities": [
+    "Designing and building retrieval-augmented generation pipelines and hybrid search",
+    "Fine-tuning open-weight LLMs and transformers using LoRA and QLoRA",
+    "Building rigorous offline and online model evaluation including LLM-as-judge scoring",
+    "Serving scalable, monitored, and cost-controlled models on AWS production infrastructure",
+    "Mentoring mid-level engineers and leading technical design reviews"
+  ],
+  "domain": "Legal and financial document intelligence - LLM applications and model serving"
+}

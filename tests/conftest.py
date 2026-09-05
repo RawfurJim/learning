@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from collections.abc import Callable
 from pathlib import Path
 
 import pytest
@@ -43,6 +44,18 @@ def scratch_recordings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
 
 
 FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+JDS_DIR = FIXTURES_DIR / "jds"
+
+
+def load_jd(name: str) -> str:
+    """Text of `tests/fixtures/jds/<name>.txt` (senior_ai_engineer, ds_nlp, ml_platform)."""
+    return (JDS_DIR / f"{name}.txt").read_text(encoding="utf-8")
+
+
+@pytest.fixture
+def jd() -> Callable[[str], str]:
+    """Fixture form of `load_jd`: `jd("senior_ai_engineer")`."""
+    return load_jd
 
 
 @pytest.fixture

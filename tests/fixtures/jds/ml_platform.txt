@@ -1,0 +1,44 @@
+Machine Learning Platform Engineer (MLOps)
+Edinburgh or Remote (UK) | Permanent | £70,000 - £85,000
+
+About Cairnside Health
+Cairnside Health builds clinical decision-support and imaging-triage software used by NHS trusts and private hospital groups. Our data science teams train dozens of models a year - from tabular risk scores to computer-vision models on radiology images - and every one of them has to be reproducible, auditable and safe to deploy in a regulated clinical environment. The ML Platform team owns the tooling that makes this possible.
+
+The role
+We are looking for an ML Platform Engineer to design, build and operate the infrastructure our data scientists use to train, register, deploy and monitor models. This is an infrastructure and software engineering role first and a modelling role second: you will spend most of your time on Kubernetes, CI/CD pipelines, feature and model stores, and observability, and you will pair closely with data scientists to make the paved road the easiest road. You will join a team of five platform engineers and report to the Head of ML Engineering.
+
+What you will do
+- Own and evolve our model training and serving platform on Kubernetes (AKS and GKE), including GPU node pools and autoscaling.
+- Build and maintain CI/CD pipelines for ML workloads (GitHub Actions, Argo Workflows) covering data validation, training, evaluation gates and promotion to production.
+- Run and extend our MLflow model registry and experiment tracking, and our feature store.
+- Containerise training and inference workloads with Docker; write and maintain Helm charts and Terraform modules.
+- Implement monitoring for data drift, model performance and infrastructure health (Prometheus, Grafana, Evidently or similar), with alerting and runbooks.
+- Improve developer experience: templates, internal CLI tooling and documentation so a new model can go from notebook to a monitored endpoint in days rather than months.
+- Contribute to our audit and traceability requirements (model lineage, dataset versioning with DVC or LakeFS) for medical device regulation.
+- Take part in a light on-call rotation for the platform.
+
+Essential skills and experience
+- 3+ years of software, DevOps or platform engineering experience, with at least 1 year supporting machine learning workloads in production.
+- Strong Python and comfortable Bash; you write tested, reviewed code.
+- Production Kubernetes experience: deployments, Helm, autoscaling, resource management, ideally including GPU workloads.
+- Infrastructure as code with Terraform.
+- Docker and container best practice.
+- CI/CD for ML (GitHub Actions, GitLab CI, Argo or Kubeflow Pipelines).
+- Experience with an experiment-tracking / model-registry tool (MLflow, Weights & Biases or similar).
+- Cloud experience on Azure or GCP (AWS also considered).
+- Observability tooling: Prometheus, Grafana, OpenTelemetry or equivalent.
+
+Desirable
+- Feature stores (Feast, Tecton) and data versioning (DVC, LakeFS).
+- Model serving frameworks such as KServe, Seldon, BentoML or Triton Inference Server.
+- Experience in a regulated environment (medical devices, ISO 13485, IEC 62304) or with NHS data governance.
+- Distributed training (Ray, PyTorch Distributed) or large-scale data processing (Spark, Dask).
+- Security experience: secrets management, network policies, supply-chain scanning.
+
+What we offer
+- £70,000 - £85,000 plus 10% bonus.
+- 30 days' holiday plus bank holidays, 8% employer pension, private healthcare and life assurance.
+- Fully remote within the UK or hybrid from our Edinburgh office; quarterly team meet-ups paid for.
+- £2,000 annual training budget and dedicated learning time.
+
+We are committed to building a diverse team and encourage applications from under-represented groups. Applicants must have the right to work in the UK.

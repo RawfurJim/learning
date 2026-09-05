@@ -4,7 +4,7 @@ from __future__ import annotations
 
 from typing import Literal
 
-from pydantic import BaseModel, computed_field
+from pydantic import BaseModel, Field, computed_field
 
 
 class Ping(BaseModel):
@@ -31,3 +31,25 @@ class ProjectFact(BaseModel):
     def professional(self) -> bool:
         """Work (JudgeService) evidence outranks personal projects everywhere."""
         return self.category == "work"
+
+
+Seniority = Literal["junior", "mid", "senior", "lead"]
+
+
+class JDIntent(BaseModel):
+    """Agent 1: what the job description really wants."""
+
+    role_summary: str
+    seniority: Seniority
+    tone: str
+    top_priorities: list[str] = Field(min_length=5, max_length=5)
+    domain: str
+
+
+class JDKeywords(BaseModel):
+    """Agent 2: skills and phrases an ATS will scan for, bucketed by how hard the JD requires them."""
+
+    mandatory: list[str]
+    nice_to_have: list[str]
+    ats_keywords: list[str]
+    responsibilities: list[str]

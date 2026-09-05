@@ -1,0 +1,13 @@
+{
+  "role_summary": "The Data Scientist will build and maintain text analytics models to classify and summarise approximately 100,000 pieces of monthly customer feedback for Brightwater Utilities. Working under the guidance of a Senior Data Scientist, the role focuses on converting raw unstructured text into actionable business evidence and regulatory reporting. Success means delivering robust, reproducible NLP solutions and presenting clear insights to non-technical stakeholders.",
+  "seniority": "junior",
+  "tone": "friendly, supportive, developmental, collaborative, pragmatic",
+  "top_priorities": [
+    "Building and evaluating text classification models on customer feedback data",
+    "Cleaning messy free-text data including PII redaction and tokenisation",
+    "Designing evaluation datasets and reporting precision and recall metrics clearly",
+    "Prototyping with pre-trained transformer models and sentence embeddings",
+    "Translating technical findings into clear dashboards and stakeholder summaries"
+  ],
+  "domain": "Water utility customer insights - NLP / text analytics"
+}

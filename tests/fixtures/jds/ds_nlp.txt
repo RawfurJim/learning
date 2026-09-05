@@ -1,0 +1,42 @@
+Data Scientist - NLP (Customer Insights)
+Manchester or Leeds (hybrid) | Permanent | £42,000 - £52,000
+
+Who we are
+Brightwater Utilities supplies water and wastewater services to 2.4 million customers across the north of England. Our Customer Insights team turns what customers tell us - complaints, surveys, web chat transcripts, social media posts and call notes - into evidence that changes how the business operates. We are a friendly, supportive team of eight data scientists and analysts, and this role is a great opportunity for someone early in their data science career who wants to specialise in natural language processing.
+
+The role
+As a Data Scientist (NLP) you will build and maintain the text analytics models that classify and summarise around 100,000 pieces of customer feedback a month. You will work alongside a Senior Data Scientist who will support your development, and you will present findings to customer service managers and regulatory reporting colleagues. We use Python, scikit-learn, Hugging Face transformers and Azure.
+
+Key responsibilities
+- Build, evaluate and improve text classification models (topic, sentiment, complaint category) on customer feedback data.
+- Clean and prepare messy free-text data: deduplication, PII redaction, language detection, tokenisation.
+- Design and maintain labelled evaluation datasets with the customer service team, and report precision, recall and F1 clearly to non-technical colleagues.
+- Prototype with pre-trained transformer models and sentence embeddings; compare against simpler baselines and justify the choice.
+- Produce clear dashboards and written summaries of themes and trends in Power BI or Streamlit.
+- Write reproducible, version-controlled code (Git) and contribute to the team's shared Python package.
+- Support our regulatory reporting on customer experience measures (C-MeX) with robust analysis.
+
+About you - essential
+- A degree in a numerate subject (maths, statistics, computer science, physics, linguistics or similar) or equivalent experience.
+- 1-3 years' experience in a data science or analytics role, or a strong portfolio of applied NLP projects.
+- Good Python skills with pandas, scikit-learn and at least one NLP library (spaCy, NLTK or Hugging Face transformers).
+- Understanding of core machine learning concepts: train/validation/test splits, cross-validation, over-fitting, class imbalance and evaluation metrics.
+- Confident writing SQL to pull and join data.
+- Able to explain technical work in plain English to non-technical stakeholders.
+- Curious, organised and comfortable asking for help.
+
+Desirable
+- Experience with sentiment analysis, topic modelling (LDA, BERTopic) or text summarisation.
+- Exposure to Azure (Azure ML, Databricks) or another cloud platform.
+- Experience with Power BI or another BI tool.
+- Knowledge of large language models and prompt-based approaches to text classification.
+- Experience in a utilities, public sector or other regulated environment.
+
+Benefits
+- £42,000 - £52,000 depending on experience.
+- 26 days' holiday plus bank holidays, rising with service.
+- Generous pension (up to 12% employer contribution), health cash plan and cycle-to-work scheme.
+- Hybrid working with two days a week in our Manchester or Leeds office.
+- A structured development plan, mentoring and funded training.
+
+Brightwater is a Disability Confident employer and welcomes applications from all backgrounds. Interviews will be held in the week commencing 6 October.

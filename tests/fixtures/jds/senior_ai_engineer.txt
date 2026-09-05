@@ -1,0 +1,47 @@
+Senior AI Engineer (LLM Applications)
+London (hybrid, 2 days a week in our Shoreditch office) | Permanent | £95,000 - £115,000 + equity
+
+About Halden Analytics
+Halden builds decision-support software for legal and financial services firms. Our platform ingests millions of documents a month and turns them into structured, searchable knowledge for our customers' analysts. We are a 60-person company that has just closed its Series B and is growing the AI team from four to ten engineers this year.
+
+The role
+We are hiring a Senior AI Engineer to own the design, fine-tuning, evaluation and production serving of the large language model features at the heart of our product: retrieval-augmented question answering over customer document sets, document classification, and structured extraction. You will take features from a notebook prototype to a monitored, cost-controlled service in AWS, and you will set the standard for how the team measures model quality.
+
+This is a senior, hands-on position. You will be expected to lead technical design discussions, mentor two mid-level engineers, and make pragmatic build-versus-buy decisions on models and tooling. You will report to the Head of AI.
+
+What you will do
+- Design and build retrieval-augmented generation (RAG) pipelines: chunking strategies, embedding models, hybrid search, re-ranking and prompt design.
+- Fine-tune open-weight LLMs (LoRA / QLoRA) and smaller transformer models for classification and extraction where prompting alone does not meet our accuracy or latency targets.
+- Build rigorous offline and online evaluation: golden datasets, LLM-as-judge scoring, regression suites and A/B tests, so every model change is measured before it ships.
+- Serve models in production on AWS (SageMaker, ECS or EKS) with autoscaling, monitoring, tracing and cost dashboards.
+- Write clean, tested Python; review code; and own services end to end including on-call for the features you build.
+- Work with product managers and domain experts to turn vague requirements into measurable model tasks.
+- Mentor engineers and lead design reviews for the AI team.
+
+Must-have skills and experience
+- 5+ years of professional software or machine learning engineering experience, including at least 2 years shipping ML or LLM systems to production.
+- Expert Python, including packaging, testing (pytest) and type-hinted, production-quality code.
+- Strong hands-on PyTorch experience: training and fine-tuning transformer models.
+- Demonstrable experience building and evaluating RAG systems (vector databases, embeddings, re-rankers).
+- Experience with LLM fine-tuning (LoRA / QLoRA / instruction tuning) and prompt engineering.
+- Production experience on AWS (SageMaker, Lambda, ECS/EKS, S3, IAM).
+- Experience designing model evaluation: offline metrics, human review loops and LLM-as-judge approaches.
+- Solid SQL and data-handling skills (pandas, Parquet).
+- Experience with Docker and CI/CD pipelines (GitHub Actions or similar).
+
+Nice-to-have
+- Kubernetes (EKS or self-managed) for model serving.
+- React or TypeScript experience so you can contribute to internal tooling front-ends.
+- Experience with model serving frameworks such as vLLM, TGI or Triton.
+- Familiarity with Terraform.
+- Experience in legal, financial or other regulated document-heavy domains.
+- Publications, open-source contributions or conference talks.
+
+What we offer
+- £95,000 - £115,000 base depending on experience, plus meaningful equity.
+- 27 days' holiday plus bank holidays, private medical insurance, 6% pension contribution.
+- £1,500 annual learning budget and time to attend conferences.
+- Hybrid working: two days a week in Shoreditch, the rest from home anywhere in the UK.
+
+How to apply
+Send a CV and a short note (no cover letter needed) describing one LLM system you have taken to production and how you measured its quality. We are an equal opportunities employer. Applicants must have the right to work in the UK; we are unable to offer visa sponsorship for this role.

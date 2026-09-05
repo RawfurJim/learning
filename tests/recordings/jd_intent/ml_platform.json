@@ -1,0 +1,13 @@
+{
+  "role_summary": "Design, build, and operate Kubernetes-based platform infrastructure and CI/CD pipelines for data scientists deploying clinical decision-support models. You will streamline model training, registry, serving, and monitoring to ensure healthcare models are reproducible, auditable, and safe in regulated environments. Success means reducing model deployment time from months to days while maintaining strict medical regulatory compliance and operational stability.",
+  "seniority": "mid",
+  "tone": "pragmatic, engineering-first, developer-centric, quality-focused, collaborative",
+  "top_priorities": [
+    "Production Kubernetes management, Docker containerisation, Helm, and Terraform infrastructure as code",
+    "Building CI/CD pipelines and model registry workflows using MLflow and GitHub Actions",
+    "Implementing observability, drift monitoring, and runbooks with Prometheus, Grafana, and Evidently",
+    "Ensuring auditability, model lineage, and dataset versioning for medical device regulation",
+    "Improving developer experience through templates, internal CLI tooling, and documentation"
+  ],
+  "domain": "Clinical decision-support and medical imaging - MLOps and Kubernetes platform engineering"
+}

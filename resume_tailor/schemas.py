@@ -127,6 +127,48 @@ class SummarySkillsResult(BaseModel):
     calls: int = 0
 
 
+class BulletRewrite(BaseModel):
+    """Agent 3: one rewritten experience bullet.
+
+    `used_kb_metrics` lists every knowledge-base metric (verbatim from the project's
+    `metrics`) the bullet now mentions; `jd_keywords_used` lists the JD keywords woven in.
+    """
+
+    para_id: str
+    text: str
+    used_kb_metrics: list[str] = []
+    jd_keywords_used: list[str] = []
+
+
+class BulletGroupRewrite(BaseModel):
+    """Agent 3 raw output for one project group: one entry per bullet, same order."""
+
+    bullets: list[BulletRewrite]
+
+
+class ExperienceResult(BaseModel):
+    """Agent 3 after the Python checks: one checked `BulletRewrite` per experience bullet.
+
+    A bullet that still broke a rule after one retry carries its original text and is
+    listed in `reverted`; `projects` maps each bullet to the knowledge-base project it
+    was grounded in (`""` when none matched). `notes` explains every correction.
+    """
+
+    bullets: list[BulletRewrite]
+    originals: dict[str, str]
+    projects: dict[str, str] = {}
+    reverted: list[str] = []
+    notes: list[str] = []
+    input_tokens: int = 0
+    output_tokens: int = 0
+    calls: int = 0
+
+    @property
+    def changed(self) -> dict[str, str]:
+        """`{para_id: new text}` for the bullets whose text differs from the original."""
+        return {b.para_id: b.text for b in self.bullets if b.text != self.originals.get(b.para_id)}
+
+
 class TokenUsage(BaseModel):
     """Tokens summed over every LLM call of a pipeline run (0 in replay mode)."""
 

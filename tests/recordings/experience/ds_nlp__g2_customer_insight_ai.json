@@ -1,0 +1,44 @@
+{
+  "bullets": [
+    {
+      "para_id": "p11",
+      "text": "Designed a multi-agent NLP pipeline that converts raw reviews into structured JSON: review-type classification, sentiment analysis, supporting evidence quotes and staff-name linking, feeding client reporting dashboards that contributed to a 20% lift in client retention.",
+      "used_kb_metrics": [
+        "20% lift in client retention"
+      ],
+      "jd_keywords_used": [
+        "NLP",
+        "sentiment analysis"
+      ]
+    },
+    {
+      "para_id": "p12",
+      "text": "Cut inference costs with a two-tier routing architecture: urgent single reviews go to the Gemini API for low-latency responses, while large batch jobs run on a self-hosted production LLM Gemma 27B on company GPU hardware, keeping per-review costs down.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "production LLM"
+      ]
+    },
+    {
+      "para_id": "p13",
+      "text": "Raised subcategory recall from 0.78 to 0.96 (F1 0.98), evaluated on a 500-review golden set of hard cases, then locked in accuracy gains using an automated regression suite that re-runs evaluation on every change and fails the build if metrics drop.",
+      "used_kb_metrics": [
+        "recall 0.78 to 0.96",
+        "F1 0.98",
+        "500-review golden set"
+      ],
+      "jd_keywords_used": [
+        "recall",
+        "F1"
+      ]
+    },
+    {
+      "para_id": "p14",
+      "text": "Adopted by account managers preparing for client meetings: per-dealer sentiment analysis breakdowns show where a dealership is struggling before the team walks in, sharpening renewal and upsell conversations.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "sentiment analysis"
+      ]
+    }
+  ]
+}

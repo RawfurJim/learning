@@ -4,9 +4,11 @@ Paste a job description to see what it wants and its ATS keywords (SCRUM-11). Up
 the CV (.docx) as well to see which JD skills are Matched, which are Adjacent
 suggestions (opt-in checkboxes, never applied on their own), which are Missing (never
 added), the knowledge-base projects ranked for this JD, and the ATS keyword coverage
-of the current CV (SCRUM-12). Press "Rewrite summary & skills" to get the professional
-summary and the skills line rewritten in the JD's vocabulary, compare before/after and
-download the tailored .docx with the layout untouched (SCRUM-13).
+of the current CV (SCRUM-12). Press "Rewrite CV" to get the professional summary and
+the skills line rewritten in the JD's vocabulary, compare before/after and download the
+tailored .docx with the layout untouched (SCRUM-13). Every experience bullet is rewritten
+too, shown in an original | new | KB metrics | keywords table with an accept checkbox per
+bullet; the download only contains the bullets you accepted (SCRUM-14).
 """
 
 from __future__ import annotations
@@ -18,14 +20,16 @@ import streamlit as st
 from resume_tailor import matching, pipeline
 from resume_tailor.agents import jd_intent, keywords
 from resume_tailor.ats_score import coverage, missing_keywords
+from resume_tailor.docx_io import iter_paragraphs, load
 from resume_tailor.llm import LLMOutputError, ProviderConfigError, RecordingMissing
 from resume_tailor.schemas import JDIntent, JDKeywords, ProjectFact, SkillMatch
 from resume_tailor.settings import REPO_ROOT, Settings
 
 DEFAULT_KB_PATH = REPO_ROOT / "knowledge" / "projects.md"
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
-REWRITE_STAGES = ["summary", "skills"]
+REWRITE_STAGES = ["summary", "skills", "experience"]
 LLM_ERRORS = (ProviderConfigError, LLMOutputError)
+ACCEPT_KEY = "accept::"  # st.session_state[f"accept::{para_id}"] -> bool, one per rewritten bullet
 
 
 def analyse(jd_text: str, case: str | None) -> tuple[JDIntent, JDKeywords]:
@@ -156,10 +160,56 @@ def tailored_file_name() -> str:
     return f"{stem}_tailored.docx"
 
 
+def accept_key(para_id: str) -> str:
+    return f"{ACCEPT_KEY}{para_id}"
+
+
+def render_bullets(result: pipeline.RunResult) -> set[str]:
+    """Per-bullet table (accept | original | new | KB metrics | keywords). Returns the rejected paragraph ids.
+
+    The accept state lives in `st.session_state[accept_key(para_id)]` (default accepted), so
+    it survives reruns and drives `pipeline.assemble` for the download.
+    """
+    rejected: set[str] = set()
+    experience = result.experience
+    if experience is None:
+        return rejected
+    st.subheader("Experience bullets")
+    changed = [b for b in experience.bullets if b.para_id in result.rewrites]
+    unchanged = [b for b in experience.bullets if b.para_id not in result.rewrites]
+    if not changed:
+        st.info("No experience bullet was changed.")
+    else:
+        st.caption("Untick a bullet to keep the original wording in the download.")
+        widths = [0.7, 3, 3, 1.6, 1.6]
+        header = st.columns(widths)
+        for col, title in zip(header, ("Accept", "Original", "New", "KB metrics used", "JD keywords")):
+            col.markdown(f"**{title}**")
+        for bullet in changed:
+            cols = st.columns(widths)
+            accepted = cols[0].checkbox(
+                f"Accept {bullet.para_id}", key=accept_key(bullet.para_id), value=True, label_visibility="collapsed"
+            )
+            cols[1].markdown(result.originals[bullet.para_id])
+            cols[2].markdown(bullet.text)
+            cols[3].markdown(", ".join(bullet.used_kb_metrics) or "-")
+            cols[4].markdown(", ".join(bullet.jd_keywords_used) or "-")
+            if not accepted:
+                rejected.add(bullet.para_id)
+    if unchanged:
+        with st.expander(f"Bullets left as they were ({len(unchanged)})"):
+            for bullet in unchanged:
+                where = " (rule check failed, original kept)" if bullet.para_id in experience.reverted else ""
+                st.markdown(f"- {bullet.text}{where}")
+    return rejected
+
+
 def render_run_result(result: pipeline.RunResult) -> None:
-    """Before/after for every rewritten paragraph, the notes, coverage and the download button."""
-    st.header("Tailored summary & skills")
+    """Before/after for every rewritten paragraph, the bullet table, notes, coverage and the download."""
+    st.header("Tailored CV")
     for para_id, section in result.sections.items():
+        if section not in ("summary", "skills"):
+            continue
         st.subheader("Professional summary" if section == "summary" else "Core skills")
         before, after = st.columns(2)
         with before:
@@ -168,15 +218,21 @@ def render_run_result(result: pipeline.RunResult) -> None:
         with after:
             st.caption("After" if para_id in result.rewrites else "After (unchanged)")
             st.markdown(result.rewrites.get(para_id, result.originals[para_id]))
+    rejected = render_bullets(result)
     for note in result.notes:
         st.warning(note)
+
+    output = pipeline.assemble(result, rejected)
+    st.session_state["tailored_docx"] = output  # test seam: the bytes the download button offers
+    out_text = "\n".join(p.full_text for p in iter_paragraphs(load(output)))
+    coverage_after = coverage(out_text, result.keywords.ats_keywords)
     cols = st.columns(3)
     cols[0].metric("ATS coverage before", f"{result.coverage_before:.0%}")
-    cols[1].metric("ATS coverage after", f"{result.coverage_after:.0%}", f"{result.coverage_after - result.coverage_before:+.0%}")
+    cols[1].metric("ATS coverage after", f"{coverage_after:.0%}", f"{coverage_after - result.coverage_before:+.0%}")
     cols[2].metric("LLM calls / tokens", f"{result.usage.calls} / {result.usage.input_tokens + result.usage.output_tokens}")
     st.download_button(
         f"Download tailored CV ({tailored_file_name()})",
-        data=result.output,
+        data=output,
         file_name=tailored_file_name(),
         mime=DOCX_MIME,
         key="download_docx",
@@ -189,13 +245,19 @@ def _forget(*keys: str) -> None:
         st.session_state.pop(key, None)
 
 
+def _forget_run() -> None:
+    _forget("run_result", "tailored_docx")
+    for key in [k for k in st.session_state if str(k).startswith(ACCEPT_KEY)]:
+        st.session_state.pop(key, None)
+
+
 def main() -> None:
     st.set_page_config(page_title="ResumeTailor", layout="wide")
     st.title("ResumeTailor")
     st.caption(
         "Upload your CV, paste a job description and press Analyse to see what the role wants and "
-        "what you can truthfully claim. Then press Rewrite to tailor the summary and skills line and "
-        "download the result; the layout is never touched."
+        "what you can truthfully claim. Then press Rewrite to tailor the summary, skills line and "
+        "experience bullets, accept or reject each bullet and download the result; the layout is never touched."
     )
 
     settings = Settings.from_env()
@@ -204,7 +266,8 @@ def main() -> None:
     if st.button("Analyse", key="analyse", type="primary"):
         jd_text = jd_text_from_state()
         case = st.session_state.get("llm_case")
-        _forget("analysis", "tailoring", "run_result")
+        _forget("analysis", "tailoring")
+        _forget_run()
         if not jd_text:
             st.warning("Paste a job description first.")
         else:
@@ -245,8 +308,8 @@ def main() -> None:
     with upper:
         render_coverage(tailoring.cv_text, result)
 
-    if st.button("Rewrite summary & skills", key="rewrite", type="primary", disabled=not cv_bytes):
-        _forget("run_result")
+    if st.button("Rewrite CV", key="rewrite", type="primary", disabled=not cv_bytes):
+        _forget_run()
         try:
             with st.spinner(f"Rewriting with {settings.llm_model} ({settings.llm_mode})..."):
                 st.session_state["run_result"] = pipeline.run(

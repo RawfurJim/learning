@@ -1,0 +1,43 @@
+{
+  "bullets": [
+    {
+      "para_id": "p11",
+      "text": "Engineered a multi-agent NLP pipeline for structured extraction, converting raw reviews into structured JSON: review-type classification, per-topic sentiment, supporting evidence quotes, and staff-name linking, feeding reporting dashboards that contributed to a 20% lift in client retention.",
+      "used_kb_metrics": [
+        "20% lift in client retention"
+      ],
+      "jd_keywords_used": [
+        "structured extraction"
+      ]
+    },
+    {
+      "para_id": "p12",
+      "text": "Reduced inference costs using Python and a two-tier routing architecture: urgent single reviews route to the Gemini API for low-latency responses, while large batch jobs execute on a self-hosted Gemma 27B on company GPU hardware, keeping per-review costs down.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Python"
+      ]
+    },
+    {
+      "para_id": "p13",
+      "text": "Improved model evaluation by raising subcategory recall from 0.78 to 0.96 (F1 0.98), measured on a 500-review golden set of hard cases, then locked in gains using CI/CD regression gates that re-run the dataset and fail builds if accuracy drops.",
+      "used_kb_metrics": [
+        "recall 0.78 to 0.96",
+        "F1 0.98",
+        "500-review golden set"
+      ],
+      "jd_keywords_used": [
+        "evaluation",
+        "CI/CD"
+      ]
+    },
+    {
+      "para_id": "p14",
+      "text": "Adopted by account managers using the Python platform for client meeting prep: per-dealer breakdowns show exactly where dealerships struggle before entering client conversations, sharpening renewal and upsell strategy.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Python"
+      ]
+    }
+  ]
+}

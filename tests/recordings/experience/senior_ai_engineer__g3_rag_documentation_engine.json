@@ -1,0 +1,32 @@
+{
+  "bullets": [
+    {
+      "para_id": "p16",
+      "text": "Built a privacy-first RAG pipeline that documents legacy PHP/JS codebases with no code leaving company infrastructure: LangChain ingestion, 2,000-character chunking, Linq-Embed-Mistral embeddings in local Chroma vector databases, and Llama 3 via Ollama; retrieval surrounds each chunk with related cross-file context, achieving a 90% reduction in manual documentation work.",
+      "used_kb_metrics": [
+        "90% reduction in manual documentation work"
+      ],
+      "jd_keywords_used": [
+        "RAG",
+        "embeddings",
+        "vector databases"
+      ]
+    },
+    {
+      "para_id": "p17",
+      "text": "Developed an automated call-quality assessment tool using WhisperX transcription and prompt engineering for LLM analysis, replacing manual QA audits.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "prompt engineering"
+      ]
+    },
+    {
+      "para_id": "p18",
+      "text": "Ran internal workshops on LLM capabilities and prompt engineering, accelerating adoption of AI tooling across the development team.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "prompt engineering"
+      ]
+    }
+  ]
+}

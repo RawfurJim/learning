@@ -1,0 +1,38 @@
+{
+  "bullets": [
+    {
+      "para_id": "p11",
+      "text": "Designed a Python-based multi-agent NLP MLOps pipeline that turns raw reviews into structured JSON: review-type classification, per-topic sentiment, supporting evidence quotes and staff-name linking, feeding dashboards for client reporting (contributing to a 20% lift in client retention).",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Python",
+        "MLOps"
+      ]
+    },
+    {
+      "para_id": "p12",
+      "text": "Cut inference costs using a Python-based two-tier routing architecture: urgent single reviews go to the Gemini API for low-latency responses, while large batch jobs run on a self-hosted Gemma 27B model on company GPU hardware, lowering per-review operational costs.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Python"
+      ]
+    },
+    {
+      "para_id": "p13",
+      "text": "Raised subcategory recall from 0.78 to 0.96 (F1 0.98), measured on a 500-review golden set of hard cases, then locked in gains using an MLOps regression suite that re-runs the set on every Python code change and fails the build if accuracy drops.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "MLOps",
+        "Python"
+      ]
+    },
+    {
+      "para_id": "p14",
+      "text": "Adopted by account managers using the Python platform to prepare for client meetings: per-dealer breakdowns show where a dealership is struggling before walking in, sharpening renewal conversations.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Python"
+      ]
+    }
+  ]
+}

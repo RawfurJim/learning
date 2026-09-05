@@ -1,0 +1,20 @@
+{
+  "bullets": [
+    {
+      "para_id": "p20",
+      "text": "ResumeBoost (ML-Based Optimiser) [GitHub]  Full-stack tool deployed on Heroku around a custom spaCy NER model, with a CI/CD pipeline and an active-learning loop that refines keyword suggestions from user interactions.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "spaCy"
+      ]
+    },
+    {
+      "para_id": "p21",
+      "text": "Government Spending Analytics [GitHub] - Designed a complete BI Data Warehouse solution, including an SQL ETL pipeline and star-schema architecture to analyse procurement trends.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "SQL"
+      ]
+    }
+  ]
+}

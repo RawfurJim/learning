@@ -1,0 +1,30 @@
+{
+  "bullets": [
+    {
+      "para_id": "p16",
+      "text": "Engineered a privacy-first RAG pipeline for NLP documentation across legacy PHP/JS codebases with no code leaving infrastructure: LangChain ingestion, 2,000-character chunking, Linq-Embed-Mistral embeddings in a local Chroma store, and Llama 3 via Ollama; retrieval surrounds each chunk with context, achieving a 90% reduction in manual documentation work.",
+      "used_kb_metrics": [
+        "90% reduction in manual documentation work"
+      ],
+      "jd_keywords_used": [
+        "NLP"
+      ]
+    },
+    {
+      "para_id": "p17",
+      "text": "Developed an automated call-quality assessment tool using WhisperX speech-to-text and rule-based large language models, replacing manual QA audits.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "large language models"
+      ]
+    },
+    {
+      "para_id": "p18",
+      "text": "Ran internal workshops on large language models and prompt engineering, accelerating adoption of AI tools across the team.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "large language models"
+      ]
+    }
+  ]
+}

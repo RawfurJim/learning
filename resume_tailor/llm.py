@@ -11,6 +11,7 @@ Invalid JSON from the provider is retried once, then `LLMOutputError` is raised.
 from __future__ import annotations
 
 import json
+import threading
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Protocol
@@ -81,23 +82,26 @@ class GeminiProvider:
 
 
 _provider: Provider | None = None
-_last_usage: Usage | None = None
+_provider_lock = threading.Lock()
+# Per thread, so agents running in parallel (pipeline ThreadPoolExecutor) each read
+# the usage of their own last call.
+_state = threading.local()
 
 
 def set_provider(provider: Provider | None) -> None:
     """Install a provider (tests use a stub). `None` rebuilds from settings on next call."""
     global _provider
-    _provider = provider
+    with _provider_lock:
+        _provider = provider
 
 
 def reset_usage() -> None:
-    global _last_usage
-    _last_usage = None
+    _state.last_usage = None
 
 
 def last_usage() -> Usage | None:
-    """Usage of the most recent `generate_json` call, or None if none has run."""
-    return _last_usage
+    """Usage of the most recent `generate_json` call *in this thread*, or None if none has run."""
+    return getattr(_state, "last_usage", None)
 
 
 def recording_path(case: str, recordings_dir: Path | None = None) -> Path:
@@ -123,7 +127,6 @@ def generate_json[T: BaseModel](prompt: str, schema: type[T], *, case: str) -> T
 
 
 def _replay[T: BaseModel](schema: type[T], path: Path) -> T:
-    global _last_usage
     if not path.exists():
         raise RecordingMissing(
             f"No recording at {path}. Produce it with LLM_MODE=record (needs GEMINI_API_KEY)."
@@ -132,18 +135,17 @@ def _replay[T: BaseModel](schema: type[T], path: Path) -> T:
         result = schema.model_validate_json(path.read_text(encoding="utf-8"))
     except ValidationError as exc:
         raise LLMOutputError(f"Recording {path} does not match {schema.__name__}: {exc}") from exc
-    _last_usage = Usage(input_tokens=0, output_tokens=0, model="replay")
+    _state.last_usage = Usage(input_tokens=0, output_tokens=0, model="replay")
     return result
 
 
 def _call_with_retry[T: BaseModel](
     provider: Provider, prompt: str, schema: type[T], model: str
 ) -> tuple[T, str]:
-    global _last_usage
     last_error: Exception | None = None
     for _ in range(MAX_ATTEMPTS):
         response = provider.generate(prompt, schema, model=model)
-        _last_usage = response.usage
+        _state.last_usage = response.usage
         try:
             return schema.model_validate_json(response.text), response.text
         except ValidationError as exc:
@@ -155,12 +157,13 @@ def _call_with_retry[T: BaseModel](
 
 def _get_provider(settings: Settings) -> Provider:
     global _provider
-    if _provider is None:
-        if settings.llm_provider != "gemini":
-            raise ProviderConfigError(
-                f"LLM_PROVIDER={settings.llm_provider!r} arrives in SCRUM-15; only 'gemini' is available."
-            )
-        if not settings.gemini_api_key:
-            raise ProviderConfigError("GEMINI_API_KEY is not set; needed for LLM_MODE=record/live.")
-        _provider = GeminiProvider(settings.gemini_api_key)
-    return _provider
+    with _provider_lock:
+        if _provider is None:
+            if settings.llm_provider != "gemini":
+                raise ProviderConfigError(
+                    f"LLM_PROVIDER={settings.llm_provider!r} arrives in SCRUM-15; only 'gemini' is available."
+                )
+            if not settings.gemini_api_key:
+                raise ProviderConfigError("GEMINI_API_KEY is not set; needed for LLM_MODE=record/live.")
+            _provider = GeminiProvider(settings.gemini_api_key)
+        return _provider

@@ -1,0 +1,30 @@
+{
+  "bullets": [
+    {
+      "para_id": "p16",
+      "text": "Built a privacy-first Machine Learning RAG pipeline documenting legacy PHP/JS codebases with no code leaving company infrastructure: LangChain ingestion, 2,000-character chunking, Linq-Embed-Mistral embeddings in a local Chroma store, and Llama 3 via Ollama; retrieval surrounds each chunk with related cross-file context, achieving a 90% reduction in manual documentation work.",
+      "used_kb_metrics": [
+        "90% reduction in manual documentation work"
+      ],
+      "jd_keywords_used": [
+        "Machine Learning"
+      ]
+    },
+    {
+      "para_id": "p17",
+      "text": "Developed an automated call-quality assessment pipeline using Machine Learning, WhisperX transcription, and LLM analysis, replacing manual QA audits.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Machine Learning"
+      ]
+    },
+    {
+      "para_id": "p18",
+      "text": "Ran internal workshops on LLM capabilities and prompt engineering, accelerating Machine Learning tooling adoption across the development team.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Machine Learning"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,35 @@
+{
+  "bullets": [
+    {
+      "para_id": "p7",
+      "text": "Engineered a Python and Machine Learning production service that drafts three reply options for every customer review, using sentiment-conditioned prompts and per-dealership rules; the dealer selects and publishes one. Roughly 93% of drafts are published unedited, processing over 100k reviews a month.",
+      "used_kb_metrics": [
+        "93% of drafts published unedited",
+        "100k reviews/month"
+      ],
+      "jd_keywords_used": [
+        "Python",
+        "Machine Learning"
+      ]
+    },
+    {
+      "para_id": "p8",
+      "text": "Applied MLOps techniques to fine-tune Llama 3 using LoRA/QLoRA with Unsloth, yielding an 8B model distilled from 70B to follow strict client wording rules while preserving fast inference speed and low operational costs.",
+      "used_kb_metrics": [
+        "8B model distilled from 70B"
+      ],
+      "jd_keywords_used": [
+        "MLOps"
+      ]
+    },
+    {
+      "para_id": "p9",
+      "text": "Deployed Docker containers on AWS EC2, configuring NVIDIA drivers and Linux from scratch, then led migration to an on-prem GPU server and implemented database caching for repeat requests to reduce operational costs and response times.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Docker",
+        "AWS"
+      ]
+    }
+  ]
+}

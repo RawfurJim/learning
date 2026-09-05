@@ -1,0 +1,45 @@
+{
+  "bullets": [
+    {
+      "para_id": "p11",
+      "text": "Designed a Python multi-agent Machine Learning pipeline parsing incoming reviews into structured JSON classification, per-topic sentiment, supporting evidence quotes, and staff-name recognition to feed client reporting dashboards, contributing to a 20% lift in client retention.",
+      "used_kb_metrics": [
+        "20% lift in client retention"
+      ],
+      "jd_keywords_used": [
+        "Python",
+        "Machine Learning"
+      ]
+    },
+    {
+      "para_id": "p12",
+      "text": "Cut Python Machine Learning inference costs with a two-tier routing architecture: urgent single reviews go to the Gemini API for low-latency responses, while large batch jobs run on a self-hosted Gemma 27B on the company's own GPU hardware, keeping per-review inference costs down.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Python",
+        "Machine Learning"
+      ]
+    },
+    {
+      "para_id": "p13",
+      "text": "Raised subcategory recall from 0.78 to 0.96 (F1 0.98), measured on a 500-review golden set of hard cases, then locked in MLOps gains with a CI/CD regression suite that re-runs the dataset on every change and fails the build if accuracy drops.",
+      "used_kb_metrics": [
+        "recall 0.78 to 0.96",
+        "F1 0.98",
+        "500-review golden set"
+      ],
+      "jd_keywords_used": [
+        "MLOps",
+        "CI/CD"
+      ]
+    },
+    {
+      "para_id": "p14",
+      "text": "Adopted by account managers to prepare for client meetings: per-dealer Machine Learning breakdowns show exactly where a dealership is struggling before the team walks in, sharpening renewal and upsell conversations.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "Machine Learning"
+      ]
+    }
+  ]
+}

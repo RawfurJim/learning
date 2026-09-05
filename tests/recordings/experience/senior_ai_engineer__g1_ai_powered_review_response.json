@@ -1,0 +1,35 @@
+{
+  "bullets": [
+    {
+      "para_id": "p7",
+      "text": "Engineered a production LLM service using prompt engineering to draft three reply options for every customer review, applying sentiment-conditioned prompts with custom per-dealership rules; dealers pick and publish responses, with 93% of drafts published unedited across over 100k reviews a month.",
+      "used_kb_metrics": [
+        "93% of drafts published unedited"
+      ],
+      "jd_keywords_used": [
+        "prompt engineering"
+      ]
+    },
+    {
+      "para_id": "p8",
+      "text": "Executed LLM fine-tuning on Llama 3 with an 8B model distilled from 70B generated examples using LoRA and QLoRA via Unsloth to enforce strict client rules that base models failed to follow, preserving speed and cost.",
+      "used_kb_metrics": [
+        "8B model distilled from 70B"
+      ],
+      "jd_keywords_used": [
+        "LLM fine-tuning",
+        "LoRA",
+        "QLoRA"
+      ]
+    },
+    {
+      "para_id": "p9",
+      "text": "Deployed model services on AWS EC2 using Docker, configuring NVIDIA drivers and Linux from scratch; led migration to an on-prem GPU server and implemented database-level caching of repeat requests to reduce latency and operating costs.",
+      "used_kb_metrics": [],
+      "jd_keywords_used": [
+        "AWS",
+        "Docker"
+      ]
+    }
+  ]
+}

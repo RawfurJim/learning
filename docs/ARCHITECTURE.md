@@ -43,7 +43,7 @@ learning/
 ## LLM access
 
 - One entry point: `resume_tailor.llm.generate_json(prompt: str, schema: type[BaseModel], *, case: str) -> BaseModel`.
-- Default provider Gemini 2.5 Flash via `google-genai`, JSON mode with `response_schema=schema`.
+- Default provider Gemini via `google-genai`, JSON mode with `response_schema=schema`. Default model `gemini-3.6-flash` (`LLM_MODEL`): the PRD names Gemini 2.5 Flash, but on 2026-09-05 the API rejected `gemini-2.5-flash` as "no longer available to new users" and recommended `gemini-3.6-flash`.
 - `LLM_MODE`:
   - `replay` (default in tests): read `tests/recordings/<agent>/<case>.json`, validate with schema. Missing file -> `RecordingMissing`.
   - `record`: call the provider and write the recording.

@@ -6,7 +6,7 @@ Epic: [SCRUM-7](https://rawfurjim12.atlassian.net/browse/SCRUM-7) — PRD
 
 | Order | Key | Title | Type | Blocked by | Status |
 |------:|-----|-------|------|-----------|--------|
-| 1 | [SCRUM-8](https://rawfurjim12.atlassian.net/browse/SCRUM-8) | Scaffold project, Gemini JSON wrapper, record/replay test harness | Task | — | To Do |
+| 1 | [SCRUM-8](https://rawfurjim12.atlassian.net/browse/SCRUM-8) | Scaffold project, Gemini JSON wrapper, record/replay test harness | Task | — | Done |
 | 2 | [SCRUM-9](https://rawfurjim12.atlassian.net/browse/SCRUM-9) | DOCX round-trip with section classification and formatting-preserving edits | Story | SCRUM-8 | To Do |
 | 3 | [SCRUM-10](https://rawfurjim12.atlassian.net/browse/SCRUM-10) | Project knowledge base loader and allowed vocabulary | Task | SCRUM-8 | To Do |
 | 4 | [SCRUM-11](https://rawfurjim12.atlassian.net/browse/SCRUM-11) | Agent 1 (JD Intent) and Agent 2 (Keyword Extractor) with Streamlit v0 | Story | SCRUM-8 | To Do |

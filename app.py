@@ -1,6 +1,7 @@
-def main():
-    print("Hello from app.py")
+"""ResumeTailor Streamlit UI (placeholder until SCRUM-11)."""
 
+import streamlit as st
 
-if __name__ == "__main__":
-    main()
+st.set_page_config(page_title="ResumeTailor")
+st.title("ResumeTailor")
+st.write("Upload a CV and paste a job description. The pipeline arrives in later tickets.")

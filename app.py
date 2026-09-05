@@ -208,6 +208,23 @@ def render_bullets(result: pipeline.RunResult) -> set[str]:
     return rejected
 
 
+SECTION_LABELS = {"summary": "Professional summary", "skills": "Core skills", "exp_bullet": "Experience bullet"}
+
+
+def render_reverts(result: pipeline.RunResult) -> None:
+    """Agent 6's refusals: what it blocked, and why, above the rest of the notes."""
+    if not result.reverts:
+        return
+    st.subheader(f"Reviewer reverted {len(result.reverts)} paragraph(s)")
+    st.caption("The reviewer refused these rewrites, so the original wording is kept in the download.")
+    for revert in result.reverts:
+        label = SECTION_LABELS.get(revert.section, revert.section or "Paragraph")
+        st.warning(f"**{label}** - {revert.reason}")
+        with st.expander("What it wanted to write"):
+            st.markdown(f"**Kept:** {revert.original}")
+            st.markdown(f"**Blocked:** {revert.rejected}")
+
+
 def render_run_result(result: pipeline.RunResult) -> None:
     """Before/after for every rewritten paragraph, the bullet table, notes, coverage and the download."""
     st.header("Tailored CV")
@@ -223,6 +240,7 @@ def render_run_result(result: pipeline.RunResult) -> None:
             st.caption("After" if para_id in result.rewrites else "After (unchanged)")
             st.markdown(result.rewrites.get(para_id, result.originals[para_id]))
     rejected = render_bullets(result)
+    render_reverts(result)
     for note in result.notes:
         st.warning(note)
 

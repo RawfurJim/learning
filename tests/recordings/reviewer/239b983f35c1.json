@@ -1,0 +1,4 @@
+{
+  "supported": false,
+  "reason": "The rewrite claims experience with GPU serving on Azure, but the provided sources only mention GPU serving on AWS and on-prem."
+}

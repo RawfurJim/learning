@@ -1,0 +1,4 @@
+{
+  "supported": true,
+  "reason": "The addition of Python as the programming language for the LLM service is explicitly supported by the project notes."
+}

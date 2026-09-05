@@ -169,6 +169,35 @@ class ExperienceResult(BaseModel):
         return {b.para_id: b.text for b in self.bullets if b.text != self.originals.get(b.para_id)}
 
 
+class Verdict(BaseModel):
+    """Agent 6's answer for one rewritten paragraph: may it replace the original?
+
+    `reason` is written for Jim, not for the model: "term not in CV/KB: React",
+    "metric missing: 93%", "length: 34 vs budget 20-24" or the semantic check's
+    explanation. It is filled in for an accepted rewrite too, so the UI can show why.
+    """
+
+    accept: bool
+    reason: str = ""
+
+
+class DriftVerdict(BaseModel):
+    """The reviewer's one LLM call: is every claim in the rewrite supported by its sources?"""
+
+    supported: bool
+    reason: str = ""
+
+
+class Revert(BaseModel):
+    """A rewrite the reviewer refused: the paragraph keeps `original` and carries `reason`."""
+
+    para_id: str
+    section: str = ""
+    reason: str = ""
+    original: str = ""
+    rejected: str = ""
+
+
 class TokenUsage(BaseModel):
     """Tokens summed over every LLM call of a pipeline run (0 in replay mode) and their price.
 

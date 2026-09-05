@@ -166,13 +166,22 @@ def assert_skills_count_within_budget(result: pipeline.RunResult, orig_line: str
 
 
 def assert_rewrites_applied(result: pipeline.RunResult) -> None:
-    """Both paragraphs really changed and neither fell back to the original."""
+    """Both paragraphs really changed and neither fell back to the original.
+
+    Since SCRUM-16 a paragraph can also leave the writer clean and still not reach the
+    document, because Agent 6 refused it: that is a pass here as long as the refusal is
+    recorded with a reason. What must never happen is the writer itself giving up.
+    """
     assert result.writer is not None
     assert not result.writer.summary_reverted, result.notes
     assert not result.writer.skills_reverted, result.notes
+    blocked = {revert.para_id: revert.reason for revert in result.reverts}
     by_section = {section: pid for pid, section in result.sections.items()}
-    assert by_section["summary"] in result.rewrites, result.notes
-    assert by_section["skills"] in result.rewrites, result.notes
+    for section in ("summary", "skills"):
+        para_id = by_section[section]
+        if para_id in result.rewrites:
+            continue
+        assert blocked.get(para_id), (section, result.notes, result.reverts)
 
 
 # ---- tests -----------------------------------------------------------------------------------------

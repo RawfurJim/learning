@@ -35,6 +35,7 @@ learning/
     fixtures/kb_sample.md         # copy of the knowledge base used by tests
     fixtures/jds/                 # senior_ai_engineer.txt, ds_nlp.txt, ml_platform.txt
     recordings/<agent>/<case>.json# recorded Gemini outputs for deterministic tests
+    fixtures/record_reviewer.py   # fills in missing Agent 6 recordings from real calls
     test_*.py
   docs/                           # PRD.md, ARCHITECTURE.md, TICKETS.md
   .env.example  pyproject.toml  .gitignore
@@ -57,6 +58,19 @@ learning/
 ## Agent contract
 
 Each agent module exposes `run(...) -> <PydanticModel>` and keeps its prompt as a module constant. Agents never touch the docx; they work on text and return structured data keyed by paragraph id. Every rule that can be checked in Python (vocabulary, numbers, length) is checked in Python, not delegated to the model.
+
+## Agent 6 (Reviewer / Guard)
+
+`reviewer.review(orig, new, vocab, fact, *, sources, semantic, case) -> Verdict` is the last thing between a rewrite and the document, and re-derives every rule from the sources rather than trusting the writer:
+
+1. `term not in CV/KB: X` — a capitalised / product-name token of `new` that is neither in `allowed_vocabulary` nor already in `orig`.
+2. `metric missing: X` — a number of `orig` that `new` dropped.
+3. `length: N vs budget A-B` — outside +/-10% words.
+4. Only if all three pass: one LLM call (`reviewer_llm.check`) asking whether `new` claims anything `orig` + `fact` + `sources` do not support.
+
+`pipeline.run` reviews every rewrite in parallel and drops the refused ones; each becomes a `Revert(para_id, section, reason, original, rejected)` in `RunResult.reverts`, which the app renders as a warning block. Each paragraph sees exactly the sources its writer was allowed to use: a bullet gets its own project notes, the summary gets the whole CV plus knowledge base. The skills line is a delimiter-separated list of terms, not a set of claims, so it is reviewed deterministically only (`SEMANTIC_SECTIONS`). `REVIEWER_SEMANTIC=0` turns the LLM call off everywhere.
+
+Recording cases are hashes of `(original, rewrite, project, sources)` (`reviewer_llm.case_for`), so identical reviews share one recording across tests. `uv run python tests/fixtures/record_reviewer.py` runs the normal replay suite and makes a real Gemini call only where a reviewer recording is missing; nothing else is re-recorded. Repeat until the suite is green.
 
 ## Docx editing rules
 

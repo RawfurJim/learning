@@ -15,6 +15,15 @@ recordings always come from a real call). A cached `RunResult` has `from_cache=T
 the same output bytes as the run that produced it. `RunResult.usage` sums the tokens of
 every agent call and prices them with `llm.estimate_cost` (0 in replay mode).
 
+Agent 6 (SCRUM-16) reviews every rewrite before it reaches the document: `reviewer.review`
+re-derives the vocabulary, metric and length rules from the original paragraph and, unless
+`REVIEWER_SEMANTIC=0`, asks one LLM call whether the new text claims anything its sources do
+not support. Each paragraph is reviewed against exactly what its writer was allowed to use:
+a bullet against itself and its project notes, the summary against the whole CV and
+knowledge base. The skills line is a list of terms rather than a set of claims, so it is
+reviewed deterministically only. A refused rewrite is dropped, the paragraph keeps its
+original text and the reason is recorded in `RunResult.reverts` for the UI.
+
 Length is enforced twice: per paragraph inside the writers (+/-10% words) and for the
 whole document here (+/-3% characters). If the assembled document is still too long
 or too short, rewrites are reverted one at a time (skills first, then summary, then the
@@ -24,14 +33,22 @@ bullets from the last one backwards) until it fits; every reversion is written t
 
 from __future__ import annotations
 
-from collections.abc import Iterable, Sequence
+from collections.abc import Iterable, Mapping, Sequence
 from concurrent.futures import ThreadPoolExecutor
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
 from resume_tailor import assembler, cache, llm, matching
-from resume_tailor.agents import default_case, experience_writer, jd_intent, keywords, summary_skills_writer
+from resume_tailor.agents import (
+    default_case,
+    experience_writer,
+    jd_intent,
+    keywords,
+    reviewer,
+    reviewer_llm,
+    summary_skills_writer,
+)
 from resume_tailor.ats_score import coverage
 from resume_tailor.docx_io import Para, iter_paragraphs, load
 from resume_tailor.knowledge import allowed_vocabulary, load_projects
@@ -40,9 +57,11 @@ from resume_tailor.schemas import (
     JDIntent,
     JDKeywords,
     ProjectFact,
+    Revert,
     SkillMatch,
     SummarySkillsResult,
     TokenUsage,
+    Verdict,
 )
 from resume_tailor.sections import Section, classify
 from resume_tailor.settings import Settings
@@ -50,6 +69,13 @@ from resume_tailor.settings import Settings
 REWRITE_STAGES = ("summary", "skills", "experience")
 ALL_STAGES = list(REWRITE_STAGES)
 PARAGRAPH_STAGES = ("summary", "skills")  # one paragraph each; "experience" covers every exp_bullet
+REVIEW_WORKERS = 4  # Agent 6 reviews the rewritten paragraphs in parallel
+# The skills line is a delimiter-separated list of terms, not prose claims: the vocabulary
+# and length checks cover it exactly, and a drift call on it only invents disagreement.
+SEMANTIC_SECTIONS = ("summary", "exp_bullet")
+# The summary may draw on the whole CV and knowledge base, so the reviewer must see them;
+# a bullet is grounded in itself and its own project notes.
+CORPUS_SECTIONS = ("summary",)
 
 
 class Analysis(BaseModel):
@@ -83,6 +109,7 @@ class RunResult(BaseModel):
     originals: dict[str, str]  # para_id -> original text
     rewrites: dict[str, str]  # para_id -> text actually applied (only changed paragraphs)
     notes: list[str]
+    reverts: list[Revert] = []  # rewrites Agent 6 refused, with the reason to show the user
     coverage_before: float
     coverage_after: float
     source: bytes  # the original CV, so `assemble` can rebuild the output after accept/reject
@@ -280,6 +307,82 @@ def assemble(result: RunResult, rejected: Iterable[str] = ()) -> bytes:
     return assembler.apply(result.source, chosen) if chosen else result.source
 
 
+def _facts_by_para(experience: ExperienceResult | None, facts: Sequence[ProjectFact]) -> dict[str, ProjectFact]:
+    """`{para_id: ProjectFact}` for the bullets the experience writer grounded in a project."""
+    by_name = {fact.name: fact for fact in facts}
+    if experience is None:
+        return {}
+    return {para_id: by_name[name] for para_id, name in experience.projects.items() if name in by_name}
+
+
+def _corpus(cv_text: str, facts: Sequence[ProjectFact]) -> str:
+    """The whole evidence base: the CV plus every knowledge-base project, as plain text."""
+    blocks = [cv_text.strip()]
+    for fact in facts:
+        blocks.append(reviewer_llm.notes_for(fact))
+    return "\n\n".join(block for block in blocks if block)
+
+
+def _review(
+    rewrites: dict[str, str],
+    originals: Mapping[str, str],
+    sections: Mapping[str, str],
+    vocabulary: set[str],
+    facts_by_para: Mapping[str, ProjectFact],
+    corpus: str,
+    meter: _UsageMeter,
+) -> list[Revert]:
+    """Run Agent 6 over every rewrite, drop the refused ones from `rewrites`, return the reverts.
+
+    The paragraphs are reviewed in parallel because the semantic check is one LLM call each;
+    `llm.last_usage()` is thread-local, so each worker reads its own call's tokens.
+    """
+    if not rewrites:
+        return []
+    semantic = Settings.from_env().reviewer_semantic
+    items = list(rewrites.items())
+
+    def one(item: tuple[str, str]) -> tuple[str, Verdict, TokenUsage]:
+        para_id, text = item
+        section = sections.get(para_id, "")
+        llm.reset_usage()
+        verdict = reviewer.review(
+            originals.get(para_id, ""),
+            text,
+            vocabulary,
+            facts_by_para.get(para_id),
+            sources=corpus if section in CORPUS_SECTIONS else "",
+            semantic=semantic and section in SEMANTIC_SECTIONS,
+        )
+        usage = llm.last_usage()
+        tokens = TokenUsage(
+            input_tokens=usage.input_tokens if usage else 0,
+            output_tokens=usage.output_tokens if usage else 0,
+            calls=1 if usage else 0,
+        )
+        return para_id, verdict, tokens
+
+    with ThreadPoolExecutor(max_workers=min(REVIEW_WORKERS, len(items))) as pool:
+        outcomes = list(pool.map(one, items))
+
+    reverts: list[Revert] = []
+    for para_id, verdict, tokens in outcomes:
+        meter.add(tokens.input_tokens, tokens.output_tokens, tokens.calls)
+        if verdict.accept:
+            continue
+        reverts.append(
+            Revert(
+                para_id=para_id,
+                section=sections.get(para_id, ""),
+                reason=verdict.reason,
+                original=originals.get(para_id, ""),
+                rejected=rewrites[para_id],
+            )
+        )
+        rewrites.pop(para_id)
+    return reverts
+
+
 def run(
     cv_bytes: bytes,
     jd_text: str,
@@ -389,6 +492,23 @@ def run(
         notes.extend(experience.notes)
         rewrites.update(experience.changed)
 
+    section_by_id = {para.id: section for section, para in editable.items()}
+    originals = {para.id: para.text for para in editable.values()}
+    if experience is not None:
+        section_by_id.update({para.id: "exp_bullet" for para in bullets})
+        originals.update(experience.originals)
+
+    # Agent 6: the independent guard. A refused rewrite never reaches the document.
+    reverts = _review(
+        rewrites,
+        originals,
+        section_by_id,
+        vocabulary,
+        _facts_by_para(experience, facts),
+        _corpus(analysis.cv_text, facts),
+        meter,
+    )
+
     output = assembler.apply(cv_bytes, rewrites) if rewrites else cv_bytes
     # Whole-document length guard: revert skills, then summary, then bullets (last first) until it fits.
     candidates: list[tuple[str, str]] = []
@@ -405,12 +525,6 @@ def run(
             notes.append(f"Reverted the {label} rewrite ({para_id}) to keep the document within +/-3% characters ({'; '.join(problems)}).")
             output = assembler.apply(cv_bytes, rewrites) if rewrites else cv_bytes
 
-    section_by_id = {para.id: section for section, para in editable.items()}
-    originals = {para.id: para.text for para in editable.values()}
-    if experience is not None:
-        section_by_id.update({para.id: "exp_bullet" for para in bullets})
-        originals.update(experience.originals)
-
     out_text = "\n".join(p.full_text for p in iter_paragraphs(load(output)))
     result = RunResult(
         case=case,
@@ -424,6 +538,7 @@ def run(
         originals=originals,
         rewrites=rewrites,
         notes=notes,
+        reverts=reverts,
         coverage_before=coverage(analysis.cv_text, analysis.keywords.ats_keywords),
         coverage_after=coverage(out_text, analysis.keywords.ats_keywords),
         source=cv_bytes,

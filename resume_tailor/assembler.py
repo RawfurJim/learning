@@ -2,19 +2,34 @@
 
 `apply` changes paragraph text only, through `docx_io.set_text`, so fonts, spacing,
 bullets and every read-only paragraph stay byte-for-byte as they were. `check_layout`
-proves it afterwards: the structure diff may contain nothing but `text` entries for the
-rewritten ids, and the whole document must stay within +/-3% characters. Page counting
-(LibreOffice) arrives with the reviewer ticket.
+proves it afterwards: the structure diff may contain nothing but `text` entries (on the
+rewritten ids, when they are given), the whole document must stay within +/-3% characters
+and, with `pages=True`, the page count must be unchanged.
+
+Page counting needs LibreOffice: `page_count` converts the document to PDF with
+`soffice --headless --convert-to pdf` and counts the pages of the result. It returns None
+when LibreOffice is not installed, and callers treat None as "cannot check" rather than
+as a failure - so the check is skipped, never faked. It is off by default because one
+conversion takes seconds and `check_layout` runs in the pipeline's revert loop.
 """
 
 from __future__ import annotations
 
+import re
+import shutil
+import subprocess
+import tempfile
 from collections.abc import Iterable, Mapping
+from pathlib import Path
 
 from resume_tailor.docx_io import Diff, iter_paragraphs, load, save, set_text, structure_diff
 
 CHAR_TOLERANCE = 0.03
 SKILLS_DELIMITER = " | "
+SOFFICE_NAMES = ("soffice", "libreoffice")
+SOFFICE_TIMEOUT = 180
+# "/Type /Page" as an object type, not the "/Pages" tree node: the next character cannot be "s".
+_PDF_PAGE = re.compile(rb"/Type\s*/Page(?![s/\w])")
 
 
 def join_skills(entries: Iterable[str], delimiter: str = SKILLS_DELIMITER) -> str:
@@ -48,22 +63,68 @@ def char_change(original: bytes, output: bytes) -> float:
     return (total_chars(output) - before) / before
 
 
-def check_layout(original: bytes, output: bytes, allowed_ids: Iterable[str]) -> list[str]:
+def soffice() -> str | None:
+    """Path to the LibreOffice binary, or None when it is not installed."""
+    for name in SOFFICE_NAMES:
+        found = shutil.which(name)
+        if found:
+            return found
+    return None
+
+
+def page_count(docx_bytes: bytes) -> int | None:
+    """Pages the document prints to, via LibreOffice; None when LibreOffice is unavailable."""
+    exe = soffice()
+    if exe is None:
+        return None
+    with tempfile.TemporaryDirectory() as tmp:
+        work = Path(tmp)
+        source = work / "cv.docx"
+        source.write_bytes(docx_bytes)
+        try:
+            subprocess.run(
+                [exe, "--headless", "--convert-to", "pdf", "--outdir", str(work), str(source)],
+                capture_output=True,
+                timeout=SOFFICE_TIMEOUT,
+                check=True,
+            )
+        except (subprocess.SubprocessError, OSError):
+            return None
+        pdfs = list(work.glob("*.pdf"))
+        if not pdfs:
+            return None
+        pages = len(_PDF_PAGE.findall(pdfs[0].read_bytes()))
+    return pages or None
+
+
+def check_layout(
+    original: bytes,
+    output: bytes,
+    allowed_ids: Iterable[str] | None = None,
+    *,
+    pages: bool = False,
+) -> list[str]:
     """Problems with `output` relative to `original`; empty when the assembly is clean.
 
-    Clean means: only `text` diffs, only on `allowed_ids`, and total characters within
-    +/-`CHAR_TOLERANCE`.
+    Clean means: only `text` diffs (fonts, styles, numbering, spacing and table shapes all
+    identical), only on `allowed_ids` when those are given, and total characters within
+    +/-`CHAR_TOLERANCE`. With `pages=True` the page count must match as well, which is
+    checked only when LibreOffice is installed (`page_count` returns None otherwise).
     """
-    allowed = set(allowed_ids)
+    allowed = None if allowed_ids is None else set(allowed_ids)
     problems: list[str] = []
     for diff in structure_diff(original, output):
         if diff.kind != "text":
             problems.append(f"{diff.kind} changed at {diff.para_id}: {diff.detail}")
-        elif diff.para_id not in allowed:
+        elif allowed is not None and diff.para_id not in allowed:
             problems.append(f"text changed outside the rewritten paragraphs at {diff.para_id}")
     change = char_change(original, output)
     if abs(change) > CHAR_TOLERANCE:
         problems.append(f"document length changed by {change:+.1%} (limit +/-{CHAR_TOLERANCE:.0%})")
+    if pages:
+        before, after = page_count(original), page_count(output)
+        if before is not None and after is not None and before != after:
+            problems.append(f"page count changed from {before} to {after}")
     return problems
 
 

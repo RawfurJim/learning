@@ -36,6 +36,7 @@ _ENV_FIELDS = {
     "LLM_MODE": "llm_mode",
     "LLM_RECORDINGS_DIR": "recordings_dir",
     "CACHE_DIR": "cache_dir",
+    "REVIEWER_SEMANTIC": "reviewer_semantic",
 }
 
 
@@ -50,6 +51,9 @@ class Settings(BaseModel):
     llm_mode: LLMMode = "replay"
     recordings_dir: Path = DEFAULT_RECORDINGS_DIR
     cache_dir: Path = DEFAULT_CACHE_DIR
+    # Agent 6's semantic-drift call. Its deterministic checks always run; set
+    # REVIEWER_SEMANTIC=0 to skip the one extra LLM call per rewritten paragraph.
+    reviewer_semantic: bool = True
 
     @classmethod
     def from_env(

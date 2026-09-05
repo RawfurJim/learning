@@ -14,7 +14,7 @@ Epic: [SCRUM-7](https://rawfurjim12.atlassian.net/browse/SCRUM-7) — PRD
 | 6 | [SCRUM-13](https://rawfurjim12.atlassian.net/browse/SCRUM-13) | Agent 4 (Summary & Skills Writer) + Assembler -> first downloadable .docx | Story | SCRUM-12 | Done |
 | 7 | [SCRUM-14](https://rawfurjim12.atlassian.net/browse/SCRUM-14) | Agent 3 (Experience Writer) with per-bullet accept/reject | Story | SCRUM-13 | Done |
 | 8 | [SCRUM-15](https://rawfurjim12.atlassian.net/browse/SCRUM-15) | Cache, token/cost display, provider switch (Groq / Ollama) | Story | SCRUM-13 | Done |
-| 9 | [SCRUM-16](https://rawfurjim12.atlassian.net/browse/SCRUM-16) | Agent 6 (Reviewer/Guard), layout checks, 3-JD regression suite | Task | SCRUM-14 | To Do |
+| 9 | [SCRUM-16](https://rawfurjim12.atlassian.net/browse/SCRUM-16) | Agent 6 (Reviewer/Guard), layout checks, 3-JD regression suite | Task | SCRUM-14 | Done |
 | 10 | [SCRUM-17](https://rawfurjim12.atlassian.net/browse/SCRUM-17) | Manual QA checklist (human) | Task | SCRUM-15, 16 | To Do |
 
 Tickets 2, 3, 4 can be done in any order after 1. Tickets 7 and 8 can be done in any order after 6.

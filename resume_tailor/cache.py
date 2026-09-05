@@ -19,7 +19,7 @@ from pydantic import BaseModel, ValidationError
 from resume_tailor.settings import Settings
 
 # Bump when the pipeline's output for identical inputs changes shape (new fields, new stages).
-CACHE_VERSION = 1
+CACHE_VERSION = 2
 
 
 def default_dir() -> Path:

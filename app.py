@@ -25,14 +25,14 @@ from resume_tailor import cache, llm, matching, pipeline
 from resume_tailor.agents import jd_intent, keywords
 from resume_tailor.ats_score import coverage, missing_keywords
 from resume_tailor.docx_io import iter_paragraphs, load
-from resume_tailor.llm import ConfigError, LLMOutputError, RecordingMissing
+from resume_tailor.llm import ConfigError, LLMOutputError, ProviderError, RecordingMissing
 from resume_tailor.schemas import JDIntent, JDKeywords, ProjectFact, SkillMatch, TokenUsage
 from resume_tailor.settings import DEFAULT_MODELS, PROVIDERS, REPO_ROOT, Settings
 
 DEFAULT_KB_PATH = REPO_ROOT / "knowledge" / "projects.md"
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
 REWRITE_STAGES = ["summary", "skills", "experience"]
-LLM_ERRORS = (ConfigError, LLMOutputError)
+LLM_ERRORS = (ConfigError, LLMOutputError, ProviderError)
 ACCEPT_KEY = "accept::"  # st.session_state[f"accept::{para_id}"] -> bool, one per rewritten bullet
 
 

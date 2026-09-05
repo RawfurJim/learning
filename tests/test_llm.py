@@ -121,3 +121,50 @@ def test_gemini_smoke(monkeypatch: pytest.MonkeyPatch) -> None:
     if mode == "record":
         assert llm.recording_path("ping").exists()
     llm.set_provider(None)
+
+
+class FailingProvider:
+    """Raises the given exception instead of answering, like a provider SDK would."""
+
+    def __init__(self, exc: Exception) -> None:
+        self.exc = exc
+        self.calls = 0
+
+    def generate(self, prompt: str, schema: type[BaseModel], *, model: str) -> ProviderResponse:
+        self.calls += 1
+        raise self.exc
+
+
+@pytest.mark.parametrize(
+    ("raised", "expected"),
+    [
+        ("429 RESOURCE_EXHAUSTED: exceeded its monthly spending cap", "spending cap"),
+        ("429 RESOURCE_EXHAUSTED: rate limit for this model", "quota exhausted"),
+        ("403 PERMISSION_DENIED: API key not valid", "API key was rejected"),
+        ("404 NOT_FOUND: model not found", "does not know this model"),
+        ("Connection reset by peer", "provider call failed"),
+    ],
+)
+def test_provider_failure_raises_readable_provider_error(
+    monkeypatch: pytest.MonkeyPatch, scratch_recordings: Path, raised: str, expected: str
+) -> None:
+    """A failed provider call surfaces as `ProviderError` explaining what to do, not the SDK's own type."""
+    monkeypatch.setenv("LLM_MODE", "live")
+    failing = FailingProvider(RuntimeError(raised))
+    llm.set_provider(failing)
+    try:
+        with pytest.raises(llm.ProviderError) as excinfo:
+            llm.generate_json("any", Ping, case="boom")
+    finally:
+        llm.set_provider(None)
+    message = str(excinfo.value)
+    assert expected in message
+    assert raised in message  # the provider's own words are kept for debugging
+    assert failing.calls == 1  # a quota/auth failure is not worth retrying
+
+
+def test_provider_error_is_caught_by_the_app() -> None:
+    """The Streamlit app catches `ProviderError`, so a capped key shows a message, not a traceback."""
+    import app
+
+    assert llm.ProviderError in app.LLM_ERRORS

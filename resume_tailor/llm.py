@@ -13,6 +13,7 @@ Providers (from `LLM_PROVIDER`, built by `build_provider`):
 Any other value -> `ConfigError`.
 
 Invalid JSON from the provider is retried once, then `LLMOutputError` is raised.
+A failed provider call (quota, bad key, unknown model, network) raises `ProviderError`.
 `estimate_cost(usage)` prices a `Usage`/`TokenUsage` with the GBP-per-1M-token table below.
 """
 
@@ -48,6 +49,14 @@ class LLMOutputError(RuntimeError):
 
 class ConfigError(RuntimeError):
     """The configured provider cannot be built (unknown LLM_PROVIDER, missing API key)."""
+
+
+class ProviderError(RuntimeError):
+    """The provider call itself failed: quota exhausted, bad key, model gone, network down.
+
+    Raised instead of the provider SDK's own exception so callers (the Streamlit app)
+    can catch one type and show the reason rather than a traceback.
+    """
 
 
 ProviderConfigError = ConfigError  # SCRUM-8 name; `ConfigError` is canonical since SCRUM-15.
@@ -340,12 +349,37 @@ def _replay[T: BaseModel](schema: type[T], path: Path) -> T:
     return result
 
 
+def provider_error_message(exc: Exception, model: str) -> str:
+    """Explain a failed provider call in one line the app can show the user."""
+    detail = str(exc).strip() or exc.__class__.__name__
+    lowered = detail.lower()
+    if "429" in detail or "resource_exhausted" in lowered or "quota" in lowered or "rate limit" in lowered:
+        if "spend" in lowered or "billing" in lowered or "cap" in lowered:
+            return (
+                f"{model}: the provider refused the call because the project's spending cap is "
+                f"reached. Raise it (Gemini: https://ai.studio/spend), switch provider in the "
+                f"sidebar, or use LLM_MODE=replay. Provider said: {detail}"
+            )
+        return (
+            f"{model}: rate limit or quota exhausted. Wait and retry, switch provider in the "
+            f"sidebar, or use LLM_MODE=replay. Provider said: {detail}"
+        )
+    if "401" in detail or "403" in detail or "api key" in lowered or "unauthenticated" in lowered:
+        return f"{model}: the API key was rejected. Check the key in `.env`. Provider said: {detail}"
+    if "404" in detail or "not found" in lowered:
+        return f"{model}: the provider does not know this model. Pick another in the sidebar. Provider said: {detail}"
+    return f"{model}: the provider call failed. Provider said: {detail}"
+
+
 def _call_with_retry[T: BaseModel](
     provider: Provider, prompt: str, schema: type[T], model: str
 ) -> tuple[T, str]:
     last_error: Exception | None = None
     for _ in range(MAX_ATTEMPTS):
-        response = provider.generate(prompt, schema, model=model)
+        try:
+            response = provider.generate(prompt, schema, model=model)
+        except Exception as exc:  # provider SDK / HTTP failure, not a schema problem
+            raise ProviderError(provider_error_message(exc, model)) from exc
         record_usage(response.usage)
         try:
             return schema.model_validate_json(response.text), response.text

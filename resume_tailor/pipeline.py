@@ -8,6 +8,13 @@ rewrites with the assembler and returns a `RunResult` holding the analysis, the
 before/after texts, notes and the output bytes. `assemble` rebuilds the document from a
 `RunResult` minus the rewrites the user rejected.
 
+Caching (SCRUM-15): `analyse` and `run` key their result on
+sha256(cv_bytes + jd_text + kb_text + json(settings)) and serve a hit from `.cache/`
+without any LLM call (`use_cache=False` bypasses it; `LLM_MODE=record` never uses it so
+recordings always come from a real call). A cached `RunResult` has `from_cache=True` and
+the same output bytes as the run that produced it. `RunResult.usage` sums the tokens of
+every agent call and prices them with `llm.estimate_cost` (0 in replay mode).
+
 Length is enforced twice: per paragraph inside the writers (+/-10% words) and for the
 whole document here (+/-3% characters). If the assembled document is still too long
 or too short, rewrites are reverted one at a time (skills first, then summary, then the
@@ -23,7 +30,7 @@ from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict
 
-from resume_tailor import assembler, llm, matching
+from resume_tailor import assembler, cache, llm, matching
 from resume_tailor.agents import default_case, experience_writer, jd_intent, keywords, summary_skills_writer
 from resume_tailor.ats_score import coverage
 from resume_tailor.docx_io import Para, iter_paragraphs, load
@@ -38,6 +45,7 @@ from resume_tailor.schemas import (
     TokenUsage,
 )
 from resume_tailor.sections import Section, classify
+from resume_tailor.settings import Settings
 
 REWRITE_STAGES = ("summary", "skills", "experience")
 ALL_STAGES = list(REWRITE_STAGES)
@@ -55,12 +63,14 @@ class Analysis(BaseModel):
     inventory: list[str]
     cv_text: str
     usage: TokenUsage = TokenUsage()
+    from_cache: bool = False
 
 
 class RunResult(BaseModel):
     """Output of `run`: the analysis, what changed, why, and the tailored document."""
 
-    model_config = ConfigDict(arbitrary_types_allowed=True)
+    # bytes fields (source, output) are base64 in JSON so a cached result round-trips exactly.
+    model_config = ConfigDict(arbitrary_types_allowed=True, ser_json_bytes="base64", val_json_bytes="base64")
 
     case: str
     stages: list[str]
@@ -80,6 +90,7 @@ class RunResult(BaseModel):
     usage: TokenUsage
     writer: SummarySkillsResult | None = None  # the summary & skills agent's checked output
     experience: ExperienceResult | None = None  # the experience writer's checked output
+    from_cache: bool = False  # True when served from `.cache/` instead of fresh agent calls
 
     @property
     def changed(self) -> bool:
@@ -111,6 +122,59 @@ class _UsageMeter:
             calls=self.total.calls + calls,
         )
 
+    def priced(self, model: str) -> TokenUsage:
+        """The totals with `model` and its estimated GBP cost filled in."""
+        total = self.total.model_copy(update={"model": model})
+        return total.model_copy(update={"estimated_cost_gbp": llm.estimate_cost(total)})
+
+
+def _kb_text(kb_path: str | Path) -> str:
+    path = Path(kb_path)
+    return path.read_text(encoding="utf-8") if path.is_file() else ""
+
+
+class _Cache:
+    """Cache lookup for one call: the key covers the inputs plus everything that changes the output."""
+
+    def __init__(
+        self,
+        kind: str,
+        cv_bytes: bytes,
+        jd_text: str,
+        kb_path: str | Path,
+        *,
+        case: str | None,
+        approved: Sequence[str] = (),
+        stages: Sequence[str] = (),
+        enabled: bool = True,
+        cache_dir: Path | None = None,
+    ) -> None:
+        settings = Settings.from_env()
+        self.enabled = enabled and settings.llm_mode != "record"
+        self.dir = cache_dir or settings.cache_dir
+        self.key = cache.cache_key(
+            cv_bytes,
+            jd_text,
+            _kb_text(kb_path),
+            {
+                "kind": kind,
+                "version": cache.CACHE_VERSION,
+                "provider": settings.llm_provider,
+                "model": settings.llm_model,
+                "mode": settings.llm_mode,
+                "case": case or "",
+                "approved_adjacent": sorted(approved),
+                "stages": list(stages),
+            },
+        )
+
+    def get[T: BaseModel](self, model: type[T]) -> T | None:
+        return cache.get(self.key, model, self.dir) if self.enabled else None
+
+    def put(self, result: BaseModel) -> None:
+        if self.enabled:
+            cache.put(self.key, result, self.dir)
+
 
 def _editable(paras: Sequence[Para], sections: dict[str, Section]) -> dict[str, Para]:
     """`{"summary": Para, "skills": Para}` for the first paragraph of each single-paragraph section."""
@@ -133,9 +197,15 @@ def analyse(
     *,
     case: str | None = None,
     jd_analysis: tuple[JDIntent, JDKeywords] | None = None,
+    use_cache: bool = True,
+    cache_dir: Path | None = None,
 ) -> Analysis:
     """Agents 1 + 2 (or the given `jd_analysis`), inventory, matching and ranking for one CV + JD."""
     case = case or default_case(jd_text)
+    cached = _Cache("analysis", cv_bytes, jd_text, kb_path, case=case, enabled=use_cache, cache_dir=cache_dir)
+    hit = cached.get(Analysis)
+    if hit is not None:
+        return hit.model_copy(update={"from_cache": True})
     meter = _UsageMeter()
     if jd_analysis is None:
         intent = jd_intent.run(jd_text, case=case)
@@ -152,7 +222,7 @@ def analyse(
     meter.tick()
     ranked = matching.rank_projects(intent, facts, case=case)
     meter.tick()
-    return Analysis(
+    analysis = Analysis(
         case=case,
         intent=intent,
         keywords=result,
@@ -160,8 +230,10 @@ def analyse(
         ranked=ranked,
         inventory=sorted(inventory, key=str.lower),
         cv_text="\n".join(p.full_text for p in paras),
-        usage=meter.total,
+        usage=meter.priced(Settings.from_env().llm_model),
     )
+    cached.put(analysis)
+    return analysis
 
 
 def experience_inputs(
@@ -217,16 +289,34 @@ def run(
     *,
     case: str | None = None,
     analysis: Analysis | None = None,
+    use_cache: bool = True,
+    cache_dir: Path | None = None,
 ) -> RunResult:
     """Tailor `cv_bytes` to `jd_text`. `stages` is a subset of {"summary", "skills", "experience"}.
 
     `analysis` (from `analyse`) is reused when given, so approving a skill and pressing
     Rewrite does not re-run the JD agents. `case` names every recording of the run.
+    An identical earlier run (same CV, JD, knowledge base, settings, approvals and stages)
+    is returned from the cache with no LLM call unless `use_cache=False` or `LLM_MODE=record`.
     """
     stages = [s for s in stages if s in REWRITE_STAGES]
     approved = [s.strip() for s in approved_adjacent if s.strip()]
+    cached = _Cache(
+        "run",
+        cv_bytes,
+        jd_text,
+        kb_path,
+        case=case or (analysis.case if analysis else None),
+        approved=approved,
+        stages=stages,
+        enabled=use_cache,
+        cache_dir=cache_dir,
+    )
+    hit = cached.get(RunResult)
+    if hit is not None:
+        return hit.model_copy(update={"from_cache": True})
     if analysis is None:
-        analysis = analyse(cv_bytes, jd_text, kb_path, case=case)
+        analysis = analyse(cv_bytes, jd_text, kb_path, case=case, use_cache=use_cache, cache_dir=cache_dir)
     case = analysis.case
     meter = _UsageMeter()
     meter.add(analysis.usage.input_tokens, analysis.usage.output_tokens, analysis.usage.calls)
@@ -322,7 +412,7 @@ def run(
         originals.update(experience.originals)
 
     out_text = "\n".join(p.full_text for p in iter_paragraphs(load(output)))
-    return RunResult(
+    result = RunResult(
         case=case,
         stages=stages,
         intent=analysis.intent,
@@ -338,7 +428,9 @@ def run(
         coverage_after=coverage(out_text, analysis.keywords.ats_keywords),
         source=cv_bytes,
         output=output,
-        usage=meter.total,
+        usage=meter.priced(Settings.from_env().llm_model),
         writer=writer,
         experience=experience,
     )
+    cached.put(result)
+    return result

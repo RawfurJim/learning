@@ -13,26 +13,43 @@ from pydantic import BaseModel
 REPO_ROOT = Path(__file__).resolve().parent.parent
 DEFAULT_ENV_FILE = REPO_ROOT / ".env"
 DEFAULT_RECORDINGS_DIR = REPO_ROOT / "tests" / "recordings"
+DEFAULT_CACHE_DIR = REPO_ROOT / ".cache"
 
 LLMProvider = Literal["gemini", "groq", "ollama"]
+PROVIDERS: tuple[str, ...] = ("gemini", "groq", "ollama")
+# The model used when the provider is switched without naming a model (sidebar, .env).
+DEFAULT_MODELS: dict[str, str] = {
+    "gemini": "gemini-3.6-flash",
+    "groq": "llama-3.3-70b-versatile",
+    "ollama": "llama3.1",
+}
+DEFAULT_OLLAMA_BASE_URL = "http://localhost:11434"
 LLMMode = Literal["replay", "record", "live"]
 
 # env var name -> Settings field
 _ENV_FIELDS = {
     "GEMINI_API_KEY": "gemini_api_key",
+    "GROQ_API_KEY": "groq_api_key",
+    "OLLAMA_BASE_URL": "ollama_base_url",
     "LLM_PROVIDER": "llm_provider",
     "LLM_MODEL": "llm_model",
     "LLM_MODE": "llm_mode",
     "LLM_RECORDINGS_DIR": "recordings_dir",
+    "CACHE_DIR": "cache_dir",
 }
 
 
 class Settings(BaseModel):
     gemini_api_key: str | None = None
-    llm_provider: LLMProvider = "gemini"
-    llm_model: str = "gemini-3.6-flash"
+    groq_api_key: str | None = None
+    ollama_base_url: str = DEFAULT_OLLAMA_BASE_URL
+    # Kept as `str` (not `LLMProvider`) so an unknown value surfaces as `llm.ConfigError`
+    # when the provider is built, not as a validation error while reading `.env`.
+    llm_provider: str = "gemini"
+    llm_model: str = DEFAULT_MODELS["gemini"]
     llm_mode: LLMMode = "replay"
     recordings_dir: Path = DEFAULT_RECORDINGS_DIR
+    cache_dir: Path = DEFAULT_CACHE_DIR
 
     @classmethod
     def from_env(

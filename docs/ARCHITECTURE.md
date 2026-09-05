@@ -50,7 +50,9 @@ learning/
   - `live`: call the provider, write nothing.
 - Invalid JSON -> one retry -> `LLMOutputError`.
 - `llm.last_usage()` returns input/output tokens and model; pipeline sums them.
-- `LLM_PROVIDER` = `gemini | groq | ollama` (Groq/Ollama arrive in SCRUM-15).
+- `LLM_PROVIDER` = `gemini | groq | ollama`. `build_provider(settings)` returns `GeminiProvider` (google-genai), `GroqProvider` (OpenAI-compatible HTTPS, `GROQ_API_KEY`) or `OllamaProvider` (`OLLAMA_BASE_URL`, `/api/chat` with `format=json`); anything else raises `ConfigError` (`ProviderConfigError` is an alias). Groq/Ollama use `urllib`, no SDK.
+- Cost: `PRICES_GBP_PER_1M` (per model, GBP per 1M input/output tokens, converted from USD at `USD_TO_GBP`) and `estimate_cost(usage)`; `RunResult.usage` carries `total_input_tokens`, `total_output_tokens`, `estimated_cost_gbp`.
+- Cache (`cache.py`): key = sha256(cv_bytes + jd_text + kb_text + json(settings)); `analyse` and `run` results are stored as JSON under `CACHE_DIR` (default `.cache/`, gitignored) and served without LLM calls on identical inputs. Bypassed by `use_cache=False` and always in `LLM_MODE=record`; the sidebar has a Clear cache button. Tests get an isolated cache dir (autouse fixture).
 
 ## Agent contract
 

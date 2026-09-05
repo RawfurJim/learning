@@ -118,3 +118,30 @@ def test_app_download_available(llm_replay, jd, sample_cv_path) -> None:
     assert "Before" in text and "After" in text
     for number in ("93%", "100k", "0.98", "20%"):
         assert number in text, number
+
+
+def test_app_sidebar_shows_cost(llm_replay, jd, sample_cv_path) -> None:
+    """SCRUM-15: after a run the sidebar shows provider, model, tokens used and estimated cost."""
+    at = AppTest.from_file(str(APP), default_timeout=60)
+    at.session_state["llm_case"] = "senior_ai_engineer"
+    at.session_state["cv_bytes"] = sample_cv_path.read_bytes()
+    at.session_state["kb_path"] = str(KB_SAMPLE)
+    at.run()
+    assert not at.exception
+    assert at.sidebar.selectbox(key="provider").value == "gemini"
+    assert at.sidebar.button(key="clear_cache")
+
+    at.text_area(key="jd_text").input(jd("senior_ai_engineer")).run()
+    at.button(key="analyse").click().run()
+    at.button(key="rewrite").click().run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert not at.error, [e.value for e in at.error]
+
+    sidebar = at.sidebar
+    labels = [str(m.label).lower() for m in sidebar.metric]
+    text = "\n".join(str(el.value) for el in sidebar.markdown) + "\n".join(str(el.value) for el in sidebar.caption)
+    text = (text + "\n" + "\n".join(labels)).lower()
+    assert "tokens" in text, text
+    assert "cost" in text, text
+    assert any("£" in str(m.value) for m in sidebar.metric), [(m.label, m.value) for m in sidebar.metric]
+    assert "gemini-3.6-flash" in text or any("gemini" in str(m.value) for m in sidebar.metric), text

@@ -24,6 +24,14 @@ def pytest_collection_modifyitems(config: pytest.Config, items: list[pytest.Item
             item.add_marker(skip)
 
 
+@pytest.fixture(autouse=True)
+def isolated_cache(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
+    """Every test gets its own empty `.cache/` so no test reads another's (or Jim's) cached runs."""
+    cache_dir = tmp_path / "cache"
+    monkeypatch.setenv("CACHE_DIR", str(cache_dir))
+    return cache_dir
+
+
 @pytest.fixture
 def llm_replay(monkeypatch: pytest.MonkeyPatch) -> None:
     """Force replay mode against the committed recordings."""

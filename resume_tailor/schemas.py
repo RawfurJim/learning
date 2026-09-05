@@ -170,8 +170,29 @@ class ExperienceResult(BaseModel):
 
 
 class TokenUsage(BaseModel):
-    """Tokens summed over every LLM call of a pipeline run (0 in replay mode)."""
+    """Tokens summed over every LLM call of a pipeline run (0 in replay mode) and their price.
+
+    `estimated_cost_gbp` comes from `llm.estimate_cost` and the per-model price table; it is
+    0 for unknown models and for local (Ollama) models. `total_*` are the ticket's names for
+    the same sums and are included in `model_dump()`.
+    """
 
     input_tokens: int = 0
     output_tokens: int = 0
     calls: int = 0
+    model: str = ""
+    estimated_cost_gbp: float = 0.0
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def total_input_tokens(self) -> int:
+        return self.input_tokens
+
+    @computed_field  # type: ignore[prop-decorator]
+    @property
+    def total_output_tokens(self) -> int:
+        return self.output_tokens
+
+    @property
+    def total_tokens(self) -> int:
+        return self.input_tokens + self.output_tokens

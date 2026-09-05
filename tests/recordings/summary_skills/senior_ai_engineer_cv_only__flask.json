@@ -1,0 +1,29 @@
+{
+  "summary": "AI Engineer with years building production LLM systems at JudgeService, a customer-insight platform for UK car dealerships. Shipped two AI products now live across major dealer groups: a review-reply service handling over 100k reviews a month with roughly 93% of drafts published unedited, and a multi-agent sentiment pipeline (0.98 F1) that powers client dashboards, feeds the complaint-handling platform, and contributed to a 20% lift in client retention. Hands-on across the full stack, including RAG systems, fine-tuning, evaluation design, FastAPI services, Docker, PyTorch, SQL, and scalable GPU serving on AWS infrastructure and on-prem.",
+  "skills": [
+    "Python (NumPy, Pandas, SciPy, Keras, NLTK)",
+    "PyTorch",
+    "Generative AI (RAG, Fine-Tuning)",
+    "Vector Databases",
+    "Cloud Platforms (AWS, Azure)",
+    "SQL",
+    "Docker",
+    "CI/CD (GitHub Actions)",
+    "Flask",
+    "AI & Deep Learning",
+    "Data Science",
+    "Machine Learning",
+    "MLOps",
+    "NLP (spaCy, HuggingFace, LangChain)",
+    "TensorFlow",
+    "Scikit-learn",
+    "Computer Vision",
+    "REST APIs",
+    "Git",
+    "Linux",
+    "Statistics & A/B Testing",
+    "Data Engineering (ETL)",
+    "Problem Solving",
+    "Team Collaboration"
+  ]
+}

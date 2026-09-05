@@ -1,5 +1,6 @@
 """Streamlit UI: paste a JD, click Analyse, see intent and keyword buckets (SCRUM-11);
-upload a CV too and see Matched / Adjacent / Missing, ranked projects and ATS coverage (SCRUM-12).
+upload a CV too and see Matched / Adjacent / Missing, ranked projects and ATS coverage (SCRUM-12);
+click Rewrite and download the tailored .docx (SCRUM-13).
 """
 
 from __future__ import annotations
@@ -86,3 +87,34 @@ def test_app_buckets_render(llm_replay, jd, sample_cv_path) -> None:
     assert "Ranked projects" in text or "ranked projects" in text.lower()
     assert "JudgeService" in text or "Review Response" in text
     assert any("coverage" in str(m.label).lower() for m in at.metric), [m.label for m in at.metric]
+
+
+def test_app_download_available(llm_replay, jd, sample_cv_path) -> None:
+    """SCRUM-13: after Rewrite, a download button offering a .docx exists."""
+    at = AppTest.from_file(str(APP), default_timeout=60)
+    at.session_state["llm_case"] = "senior_ai_engineer"
+    at.session_state["cv_bytes"] = sample_cv_path.read_bytes()
+    at.session_state["kb_path"] = str(KB_SAMPLE)
+    at.run()
+    assert not at.exception
+
+    at.text_area(key="jd_text").input(jd("senior_ai_engineer")).run()
+    at.button(key="analyse").click().run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert not at.download_button  # nothing to download before Rewrite
+
+    at.button(key="rewrite").click().run()
+    assert not at.exception, [e.value for e in at.exception]
+    assert not at.error, [e.value for e in at.error]
+
+    buttons = at.download_button
+    assert len(buttons) == 1, buttons
+    label = str(buttons[0].label)
+    assert label.endswith(".docx)") and "sample_cv_tailored.docx" not in label  # seam has no upload name
+    assert "cv_tailored.docx" in label, label
+    assert str(buttons[0].proto.url).endswith(".docx") or ".docx" in label
+
+    text = _rendered_text(at)
+    assert "Before" in text and "After" in text
+    for number in ("93%", "100k", "0.98", "20%"):
+        assert number in text, number

@@ -1,0 +1,30 @@
+{
+  "summary": "Data Science professional with hands-on experience building and evaluating text classification and sentiment analysis models on high-volume customer feedback data at JudgeService. Shipped an NLP pipeline evaluating review classification against a golden dataset to reach a 0.98 F1 score, powering client dashboards and driving a 20% lift in client retention. Developed a production LLM review-reply service processing over 100k customer reviews a month with 93% of drafts published unedited. Proficient in Python, Pandas, Scikit-learn, spaCy, NLTK, transformers, SQL, Azure, and Power BI to translate unstructured text into actionable business insights.",
+  "skills": [
+    "Data Science",
+    "Python",
+    "Pandas",
+    "Scikit-learn",
+    "spaCy",
+    "NLTK",
+    "Machine Learning",
+    "SQL",
+    "transformers",
+    "sentiment analysis",
+    "Azure",
+    "Power BI",
+    "production LLM",
+    "AI & Deep Learning",
+    "Cloud Platforms (AWS)",
+    "Generative AI (RAG, Fine-Tuning)",
+    "Statistics & A/B Testing",
+    "CI/CD (GitHub Actions)",
+    "Data Engineering (ETL)",
+    "structured JSON output",
+    "on-prem GPU server",
+    "CI regression gate",
+    "multi-agent pipeline",
+    "Vector Databases",
+    "Team Collaboration"
+  ]
+}

@@ -4,157 +4,157 @@
       "jd_skill": "Software engineering",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Generic field/discipline with no exact skill equivalent in inventory."
+      "reason": "Generic skill or broad domain with no specific matching tool or equivalent skill in inventory."
     },
     {
       "jd_skill": "machine learning engineering",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Generic role/domain with no specific tool or exact matching entry in inventory."
+      "reason": "Generic domain/role description without a specific matching inventory item."
     },
     {
       "jd_skill": "pytest",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No Python unit testing framework present in inventory."
+      "reason": "Specific Python testing framework not present in inventory."
     },
     {
       "jd_skill": "Type hinting",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No type hinting or static typing features listed in inventory."
+      "reason": "Language feature/concept not listed in inventory."
     },
     {
       "jd_skill": "re-ranking",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No search re-ranking or cross-encoder ranking tool listed in inventory."
+      "reason": "Specific RAG/retrieval technique not explicitly found in inventory."
     },
     {
       "jd_skill": "LLM fine-tuning",
       "relation": "same",
       "inventory_skill": "Fine-Tuning",
-      "reason": "LLM fine-tuning is the same concept as Fine-Tuning in inventory."
+      "reason": "Fine-Tuning refers to the same concept of model fine-tuning."
     },
     {
       "jd_skill": "instruction tuning",
       "relation": "adjacent",
       "inventory_skill": "Fine-Tuning",
-      "reason": "Instruction tuning is a specific sub-type of model fine-tuning."
+      "reason": "Instruction tuning is a specific subtype of fine-tuning for models."
     },
     {
       "jd_skill": "SageMaker",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Broad cloud provider AWS in inventory does not make specific managed services like SageMaker matching."
+      "reason": "Cloud ML platform service; specific cloud services do not map directly to cloud provider alone."
     },
     {
       "jd_skill": "Lambda",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "AWS Lambda serverless compute is not present in inventory."
+      "reason": "AWS serverless compute service not listed in inventory."
     },
     {
       "jd_skill": "ECS",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "AWS container management service is not present in inventory."
+      "reason": "AWS container orchestration service not listed in inventory; Docker in inventory is containerization, not orchestration."
     },
     {
       "jd_skill": "EKS",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Managed Kubernetes service is not present in inventory."
+      "reason": "AWS managed Kubernetes service not present in inventory."
     },
     {
       "jd_skill": "S3",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "AWS object storage is not present in inventory."
+      "reason": "AWS object storage service not present in inventory."
     },
     {
       "jd_skill": "IAM",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Identity and access management is not present in inventory."
+      "reason": "AWS identity and access management service not present in inventory."
     },
     {
       "jd_skill": "model evaluation",
       "relation": "same",
       "inventory_skill": "evaluation",
-      "reason": "Model evaluation is the same concept as evaluation in inventory."
+      "reason": "Evaluation in ML context refers to model evaluation."
     },
     {
       "jd_skill": "offline metrics",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No specific offline metrics tooling or concept in inventory."
+      "reason": "Specific evaluation approach not present in inventory."
     },
     {
       "jd_skill": "LLM-as-judge",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No LLM-as-judge evaluation framework in inventory."
+      "reason": "Specific LLM evaluation methodology not present in inventory."
     },
     {
       "jd_skill": "Parquet",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No Parquet file format or storage technology in inventory."
+      "reason": "Specific file storage format not present in inventory."
     },
     {
       "jd_skill": "Kubernetes",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Docker in inventory is containerization and is strictly not adjacent to orchestration tools like Kubernetes."
+      "reason": "Container orchestration tool not in inventory; Docker is container runtime/engine."
     },
     {
       "jd_skill": "React",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No front-end framework in inventory."
+      "reason": "Front-end framework not present in inventory; backend/general languages do not map directly."
     },
     {
       "jd_skill": "TypeScript",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "TypeScript is a distinct programming language from JavaScript."
+      "reason": "Programming language not in inventory; different programming languages are not adjacent."
     },
     {
       "jd_skill": "vLLM",
       "relation": "adjacent",
       "inventory_skill": "Ollama",
-      "reason": "vLLM is an LLM inference and serving engine doing the same job as Ollama."
+      "reason": "vLLM and Ollama are both local/open LLM inference and serving engines."
     },
     {
       "jd_skill": "TGI",
       "relation": "adjacent",
       "inventory_skill": "Ollama",
-      "reason": "Text Generation Inference is an LLM serving tool from the same family as Ollama."
+      "reason": "Text Generation Inference (TGI) and Ollama are both dedicated LLM serving framework tools."
     },
     {
       "jd_skill": "Triton",
-      "relation": "none",
-      "inventory_skill": "",
-      "reason": "No Triton inference server or language in inventory."
+      "relation": "adjacent",
+      "inventory_skill": "Ollama",
+      "reason": "Triton Inference Server and Ollama belong to the same family of model serving frameworks."
     },
     {
       "jd_skill": "Terraform",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "No Infrastructure as Code tool in inventory."
+      "reason": "Infrastructure as Code tool not present in inventory."
     },
     {
       "jd_skill": "Legal domain",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Domain area with no equivalent skill in inventory."
+      "reason": "Domain expertise generic phrase not present in inventory."
     },
     {
       "jd_skill": "Financial domain",
       "relation": "none",
       "inventory_skill": "",
-      "reason": "Domain area with no equivalent skill in inventory."
+      "reason": "Domain expertise generic phrase not present in inventory."
     }
   ]
 }

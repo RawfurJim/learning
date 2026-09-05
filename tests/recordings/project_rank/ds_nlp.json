@@ -1,0 +1,49 @@
+{
+  "scores": [
+    {
+      "name": "AI-Powered Review Response System",
+      "score": 0.8,
+      "reason": "Directly addresses 100k/month customer review volume using LLMs and sentiment-conditioned prompts in production, though focused on response generation rather than feedback classification and reporting."
+    },
+    {
+      "name": "Customer Insight AI Agent & Sentiment Platform",
+      "score": 0.98,
+      "reason": "Directly aligns with the core role by classifying customer review text into structured topics and sentiment, using golden evaluation datasets with explicit recall and F1 metrics to power client reporting dashboards."
+    },
+    {
+      "name": "RAG Documentation Engine, QA Automation & Mentoring",
+      "score": 0.5,
+      "reason": "Demonstrates experience with sentence embeddings, vector stores, and local LLMs, but applies them to code documentation and QA audio analysis rather than customer feedback analytics."
+    },
+    {
+      "name": "ResumeBoost (ML-Based Resume Optimiser)",
+      "score": 0.35,
+      "reason": "Shares core NLP techniques like tokenisation and spaCy NER on unstructured text, but focuses on resume keyword extraction rather than feedback classification or reporting."
+    },
+    {
+      "name": "Predictive Model for Students' Mathematics Performance",
+      "score": 0.05,
+      "reason": "Focuses purely on standard tabular regression algorithms for numerical data and is unrelated to NLP, text analytics, or customer feedback."
+    },
+    {
+      "name": "Personalized Diet Recommendation System",
+      "score": 0.0,
+      "reason": "Applies tabular KNN recommendation algorithms to physical user metrics, sharing no relevance with unstructured text analytics or customer feedback."
+    },
+    {
+      "name": "Data Warehouse for Government Spending Insights",
+      "score": 0.2,
+      "reason": "Demonstrates stakeholder reporting and Power BI dashboard creation, but works entirely with structured SQL financial data rather than unstructured text or NLP."
+    },
+    {
+      "name": "Multimodal Fusion to Detect Sarcasm",
+      "score": 0.55,
+      "reason": "Applies pre-trained transformer NLP models (BERT) to classify nuanced sentiment and social text, though focused on multimodal meme data rather than business customer feedback."
+    },
+    {
+      "name": "UK Inflation Impact Analysis",
+      "score": 0.15,
+      "reason": "Shows capability in tabular data cleaning and Power BI visualisations for non-technical stakeholders, but lacks any NLP or text modeling components."
+    }
+  ]
+}

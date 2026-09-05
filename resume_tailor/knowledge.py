@@ -103,11 +103,16 @@ def load_projects(path: str | Path) -> list[ProjectFact]:
     return parse_projects(kb_path.read_text(encoding="utf-8"))
 
 
+def raw_tokens(text: str) -> list[str]:
+    """Vocabulary tokens of `text` in order, case preserved (`JudgeService`, `CI/CD`, `F1`)."""
+    return [match.group(0) for match in _TOKEN.finditer(text)]
+
+
 def tokens(text: str) -> set[str]:
     """Lower-cased vocabulary tokens of `text`: whole tokens plus their joiner-split parts."""
     found: set[str] = set()
-    for match in _TOKEN.finditer(text):
-        token = match.group(0).lower()
+    for raw in raw_tokens(text):
+        token = raw.lower()
         if not _HAS_LETTER.search(token):
             continue  # bare numbers are handled by extract_numbers
         found.add(token)

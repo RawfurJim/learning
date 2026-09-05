@@ -1,0 +1,208 @@
+{
+  "mappings": [
+    {
+      "jd_skill": "Bash",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No shell scripting or Bash experience listed in inventory."
+    },
+    {
+      "jd_skill": "Kubernetes",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Docker is present in inventory but container management is not adjacent to Kubernetes orchestration per guidelines."
+    },
+    {
+      "jd_skill": "Helm",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No Kubernetes package management tool in inventory."
+    },
+    {
+      "jd_skill": "autoscaling",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No autoscaling tools or experience in inventory."
+    },
+    {
+      "jd_skill": "resource management",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Generic phrase with no matching inventory tool."
+    },
+    {
+      "jd_skill": "GPU workloads",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Generic phrase; specific GPU hardware and serving are listed, but no direct equivalent concept skill."
+    },
+    {
+      "jd_skill": "Terraform",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No infrastructure as code tools in inventory."
+    },
+    {
+      "jd_skill": "GitLab CI",
+      "relation": "adjacent",
+      "inventory_skill": "GitHub Actions",
+      "reason": "GitHub Actions is an adjacent CI/CD platform performing the same function."
+    },
+    {
+      "jd_skill": "Argo",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No GitOps or workflow orchestration tools in inventory."
+    },
+    {
+      "jd_skill": "Kubeflow Pipelines",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No ML workflow orchestration tools in inventory."
+    },
+    {
+      "jd_skill": "MLflow",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No experiment tracking or model registry tool in inventory."
+    },
+    {
+      "jd_skill": "Weights & Biases",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No experiment tracking platforms in inventory."
+    },
+    {
+      "jd_skill": "GCP",
+      "relation": "adjacent",
+      "inventory_skill": "AWS",
+      "reason": "AWS is an adjacent major cloud service provider offering equivalent cloud infrastructure."
+    },
+    {
+      "jd_skill": "Prometheus",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No metrics collection/monitoring tool in inventory."
+    },
+    {
+      "jd_skill": "Grafana",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No monitoring dashboard tool in inventory."
+    },
+    {
+      "jd_skill": "OpenTelemetry",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No observability framework in inventory."
+    },
+    {
+      "jd_skill": "Feast",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No feature store tools in inventory."
+    },
+    {
+      "jd_skill": "Tecton",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No feature store tools in inventory."
+    },
+    {
+      "jd_skill": "DVC",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No data version control tools in inventory."
+    },
+    {
+      "jd_skill": "LakeFS",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No data lake versioning tools in inventory."
+    },
+    {
+      "jd_skill": "KServe",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No Kubernetes-based model serving tools in inventory."
+    },
+    {
+      "jd_skill": "Seldon",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No model deployment platforms in inventory."
+    },
+    {
+      "jd_skill": "BentoML",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No model serving framework in inventory."
+    },
+    {
+      "jd_skill": "Triton Inference Server",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No specialized inference server in inventory."
+    },
+    {
+      "jd_skill": "ISO 13485",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Regulatory standard with no inventory match."
+    },
+    {
+      "jd_skill": "IEC 62304",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Medical software standard with no inventory match."
+    },
+    {
+      "jd_skill": "NHS data governance",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Domain governance standard with no inventory match."
+    },
+    {
+      "jd_skill": "Ray",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No distributed computing framework in inventory."
+    },
+    {
+      "jd_skill": "PyTorch Distributed",
+      "relation": "adjacent",
+      "inventory_skill": "PyTorch",
+      "reason": "PyTorch core experience transfers directly to PyTorch Distributed."
+    },
+    {
+      "jd_skill": "Spark",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No distributed big data processing tool in inventory."
+    },
+    {
+      "jd_skill": "Dask",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "No parallel computing framework in inventory."
+    },
+    {
+      "jd_skill": "secrets management",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Generic phrase with no matching tool in inventory."
+    },
+    {
+      "jd_skill": "network policies",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Networking policy configuration tool or skill not in inventory."
+    },
+    {
+      "jd_skill": "supply-chain scanning",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Security scanning skill not in inventory."
+    }
+  ]
+}

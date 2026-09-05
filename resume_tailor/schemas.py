@@ -100,3 +100,36 @@ class ProjectRanking(BaseModel):
     """Project-ranking call output: a raw score per project (professional weighting is applied in code)."""
 
     scores: list[ProjectScore]
+
+
+class SummarySkillsRewrite(BaseModel):
+    """Agent 4 raw output: the rewritten professional summary and the new skills-line entries."""
+
+    summary: str
+    skills: list[str]
+
+
+class SummarySkillsResult(BaseModel):
+    """Agent 4 after the Python checks (vocabulary, numbers, length, ordering, budget).
+
+    `summary_reverted` / `skills_reverted` say that the model's output still broke a rule
+    after one retry and the original text (skills: original entries, mandatory-first)
+    was used instead. `notes` explains every correction in plain English.
+    """
+
+    summary: str
+    skills: list[str]
+    summary_reverted: bool = False
+    skills_reverted: bool = False
+    notes: list[str] = []
+    input_tokens: int = 0
+    output_tokens: int = 0
+    calls: int = 0
+
+
+class TokenUsage(BaseModel):
+    """Tokens summed over every LLM call of a pipeline run (0 in replay mode)."""
+
+    input_tokens: int = 0
+    output_tokens: int = 0
+    calls: int = 0

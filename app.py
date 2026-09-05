@@ -4,7 +4,9 @@ Paste a job description to see what it wants and its ATS keywords (SCRUM-11). Up
 the CV (.docx) as well to see which JD skills are Matched, which are Adjacent
 suggestions (opt-in checkboxes, never applied on their own), which are Missing (never
 added), the knowledge-base projects ranked for this JD, and the ATS keyword coverage
-of the current CV (SCRUM-12).
+of the current CV (SCRUM-12). Press "Rewrite summary & skills" to get the professional
+summary and the skills line rewritten in the JD's vocabulary, compare before/after and
+download the tailored .docx with the layout untouched (SCRUM-13).
 """
 
 from __future__ import annotations
@@ -13,16 +15,17 @@ from pathlib import Path
 
 import streamlit as st
 
-from resume_tailor import matching
+from resume_tailor import matching, pipeline
 from resume_tailor.agents import jd_intent, keywords
 from resume_tailor.ats_score import coverage, missing_keywords
-from resume_tailor.docx_io import iter_paragraphs, load
-from resume_tailor.knowledge import load_projects
 from resume_tailor.llm import LLMOutputError, ProviderConfigError, RecordingMissing
 from resume_tailor.schemas import JDIntent, JDKeywords, ProjectFact, SkillMatch
 from resume_tailor.settings import REPO_ROOT, Settings
 
 DEFAULT_KB_PATH = REPO_ROOT / "knowledge" / "projects.md"
+DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+REWRITE_STAGES = ["summary", "skills"]
+LLM_ERRORS = (ProviderConfigError, LLMOutputError)
 
 
 def analyse(jd_text: str, case: str | None) -> tuple[JDIntent, JDKeywords]:
@@ -32,21 +35,18 @@ def analyse(jd_text: str, case: str | None) -> tuple[JDIntent, JDKeywords]:
 
 def tailor(
     cv_bytes: bytes,
+    jd_text: str,
     intent: JDIntent,
     result: JDKeywords,
-    facts: list[ProjectFact],
+    kb_path: Path,
     case: str | None,
-) -> dict:
-    """Deterministic matching + the two recorded calls (alias, project ranking) + coverage."""
-    paras = iter_paragraphs(load(cv_bytes))
-    inventory = matching.build_inventory(paras, facts)
-    cv_text = "\n".join(p.full_text for p in paras)
-    return {
-        "match": matching.match(result, inventory, facts, case=case),
-        "ranked": matching.rank_projects(intent, facts, case=case),
-        "cv_text": cv_text,
-        "inventory": inventory,
-    }
+) -> pipeline.Analysis:
+    """Deterministic matching + the two recorded calls (alias, project ranking), reused by Rewrite."""
+    return pipeline.analyse(cv_bytes, jd_text, kb_path, case=case, jd_analysis=(intent, result))
+
+
+def jd_text_from_state() -> str:
+    return (st.session_state.get("jd_text") or "").strip()
 
 
 def cv_bytes_from_ui() -> bytes | None:
@@ -59,6 +59,7 @@ def cv_bytes_from_ui() -> bytes | None:
     """
     uploaded = st.file_uploader("CV (.docx)", type=["docx"], key="cv_upload")
     if uploaded is not None:
+        st.session_state["cv_name"] = uploaded.name
         return uploaded.getvalue()
     seam = st.session_state.get("cv_bytes")
     return bytes(seam) if seam else None
@@ -110,8 +111,8 @@ def approved_adjacent_from_ui(raw: SkillMatch) -> list[str]:
     return approved
 
 
-def render_buckets(raw: SkillMatch) -> SkillMatch:
-    """Three columns; returns the buckets after applying the ticked adjacent skills."""
+def render_buckets(raw: SkillMatch) -> tuple[SkillMatch, list[str]]:
+    """Three columns; returns the buckets after applying the ticked adjacent skills, and those skills."""
     col_matched, col_adjacent, col_missing = st.columns(3)
     with col_adjacent:
         st.subheader("Adjacent")
@@ -126,7 +127,7 @@ def render_buckets(raw: SkillMatch) -> SkillMatch:
         st.subheader("Missing")
         st.caption("Never added to the CV.")
         st.markdown(_bullets(shown.missing, {}, "nothing missing"))
-    return shown
+    return shown, approved
 
 
 def render_ranked(ranked: list[tuple[ProjectFact, float]]) -> None:
@@ -150,20 +151,60 @@ def render_coverage(cv_text: str, result: JDKeywords) -> None:
         st.markdown(", ".join(missing) or "_all present_")
 
 
+def tailored_file_name() -> str:
+    stem = Path(st.session_state.get("cv_name") or "cv.docx").stem
+    return f"{stem}_tailored.docx"
+
+
+def render_run_result(result: pipeline.RunResult) -> None:
+    """Before/after for every rewritten paragraph, the notes, coverage and the download button."""
+    st.header("Tailored summary & skills")
+    for para_id, section in result.sections.items():
+        st.subheader("Professional summary" if section == "summary" else "Core skills")
+        before, after = st.columns(2)
+        with before:
+            st.caption("Before")
+            st.markdown(result.originals[para_id])
+        with after:
+            st.caption("After" if para_id in result.rewrites else "After (unchanged)")
+            st.markdown(result.rewrites.get(para_id, result.originals[para_id]))
+    for note in result.notes:
+        st.warning(note)
+    cols = st.columns(3)
+    cols[0].metric("ATS coverage before", f"{result.coverage_before:.0%}")
+    cols[1].metric("ATS coverage after", f"{result.coverage_after:.0%}", f"{result.coverage_after - result.coverage_before:+.0%}")
+    cols[2].metric("LLM calls / tokens", f"{result.usage.calls} / {result.usage.input_tokens + result.usage.output_tokens}")
+    st.download_button(
+        f"Download tailored CV ({tailored_file_name()})",
+        data=result.output,
+        file_name=tailored_file_name(),
+        mime=DOCX_MIME,
+        key="download_docx",
+        type="primary",
+    )
+
+
+def _forget(*keys: str) -> None:
+    for key in keys:
+        st.session_state.pop(key, None)
+
+
 def main() -> None:
     st.set_page_config(page_title="ResumeTailor", layout="wide")
     st.title("ResumeTailor")
     st.caption(
-        "Upload your CV, paste a job description and press Analyse to see what the role wants, "
-        "what you can truthfully claim, and your ATS coverage. Rewrites arrive in later tickets."
+        "Upload your CV, paste a job description and press Analyse to see what the role wants and "
+        "what you can truthfully claim. Then press Rewrite to tailor the summary and skills line and "
+        "download the result; the layout is never touched."
     )
 
     settings = Settings.from_env()
     cv_bytes = cv_bytes_from_ui()
     st.text_area("Job description", height=320, key="jd_text", placeholder="Paste the full job advert here")
     if st.button("Analyse", key="analyse", type="primary"):
-        jd_text = (st.session_state.get("jd_text") or "").strip()
+        jd_text = jd_text_from_state()
         case = st.session_state.get("llm_case")
+        _forget("analysis", "tailoring", "run_result")
         if not jd_text:
             st.warning("Paste a job description first.")
         else:
@@ -171,41 +212,57 @@ def main() -> None:
                 with st.spinner(f"Reading the job description with {settings.llm_model} ({settings.llm_mode})..."):
                     intent, result = analyse(jd_text, case)
                     st.session_state["analysis"] = (intent, result)
-                    st.session_state.pop("tailoring", None)
                     if cv_bytes:
-                        facts = load_projects(kb_path_from_ui())
-                        st.session_state["tailoring"] = tailor(cv_bytes, intent, result, facts, case)
+                        st.session_state["tailoring"] = tailor(cv_bytes, jd_text, intent, result, kb_path_from_ui(), case)
             except RecordingMissing:
-                st.session_state.pop("analysis", None)
-                st.session_state.pop("tailoring", None)
+                _forget("analysis", "tailoring")
                 st.error(
                     "LLM_MODE is `replay` and there is no recording for this job description. "
                     "Set `LLM_MODE=live` in `.env` to call Gemini."
                 )
-            except (ProviderConfigError, LLMOutputError) as exc:
-                st.session_state.pop("analysis", None)
-                st.session_state.pop("tailoring", None)
+            except LLM_ERRORS as exc:
+                _forget("analysis", "tailoring")
                 st.error(str(exc))
 
-    if "analysis" in st.session_state:
-        intent, result = st.session_state["analysis"]
-        left, right = st.columns(2)
-        with left:
-            render_intent(intent)
-        with right:
-            render_keywords(result)
+    if "analysis" not in st.session_state:
+        return
+    intent, result = st.session_state["analysis"]
+    left, right = st.columns(2)
+    with left:
+        render_intent(intent)
+    with right:
+        render_keywords(result)
 
-        if "tailoring" in st.session_state:
-            tailoring = st.session_state["tailoring"]
-            st.header("What you can claim")
-            render_buckets(tailoring["match"])
-            lower, upper = st.columns(2)
-            with lower:
-                render_ranked(tailoring["ranked"])
-            with upper:
-                render_coverage(tailoring["cv_text"], result)
-        else:
-            st.info("Upload your CV (.docx) and press Analyse again to see matched skills, ranked projects and coverage.")
+    if "tailoring" not in st.session_state:
+        st.info("Upload your CV (.docx) and press Analyse again to see matched skills, ranked projects and coverage.")
+        return
+    tailoring: pipeline.Analysis = st.session_state["tailoring"]
+    st.header("What you can claim")
+    _, approved = render_buckets(tailoring.match)
+    lower, upper = st.columns(2)
+    with lower:
+        render_ranked(tailoring.ranked)
+    with upper:
+        render_coverage(tailoring.cv_text, result)
+
+    if st.button("Rewrite summary & skills", key="rewrite", type="primary", disabled=not cv_bytes):
+        _forget("run_result")
+        try:
+            with st.spinner(f"Rewriting with {settings.llm_model} ({settings.llm_mode})..."):
+                st.session_state["run_result"] = pipeline.run(
+                    cv_bytes,
+                    jd_text_from_state(),
+                    kb_path_from_ui(),
+                    approved,
+                    REWRITE_STAGES,
+                    analysis=tailoring,
+                )
+        except RecordingMissing:
+            st.error("LLM_MODE is `replay` and there is no recording for this rewrite. Set `LLM_MODE=live` in `.env`.")
+        except LLM_ERRORS as exc:
+            st.error(str(exc))
+    if "run_result" in st.session_state:
+        render_run_result(st.session_state["run_result"])
 
 
 main()

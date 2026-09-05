@@ -1,0 +1,58 @@
+{
+  "mappings": [
+    {
+      "jd_skill": "Degree in numerate subject",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Qualification requirement rather than a technical tool or skill in inventory."
+    },
+    {
+      "jd_skill": "Hugging Face transformers",
+      "relation": "same",
+      "inventory_skill": "transformers",
+      "reason": "Hugging Face transformers refers to the transformers Python library present in the inventory."
+    },
+    {
+      "jd_skill": "topic modelling",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Topic modelling is a specific NLP task not explicitly listed in the inventory."
+    },
+    {
+      "jd_skill": "LDA",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Latent Dirichlet Allocation is a specific topic modeling algorithm not in the inventory."
+    },
+    {
+      "jd_skill": "BERTopic",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "BERTopic is a specific topic modeling library not listed in the inventory."
+    },
+    {
+      "jd_skill": "text summarisation",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Text summarisation is a specific NLP task not in the inventory."
+    },
+    {
+      "jd_skill": "Azure ML",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Azure ML is a specific platform service; general Azure or cloud platforms in inventory do not map directly."
+    },
+    {
+      "jd_skill": "Databricks",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Databricks platform is not present in the inventory."
+    },
+    {
+      "jd_skill": "large language models",
+      "relation": "same",
+      "inventory_skill": "production LLM",
+      "reason": "Large language models is the spelled-out form of LLM, present in the inventory as production LLM."
+    }
+  ]
+}

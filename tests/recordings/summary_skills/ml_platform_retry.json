@@ -1,0 +1,31 @@
+{
+  "summary": "AI Engineer with extensive experience building production LLM systems, MLOps workflows, and Docker containerised deployments across AWS and on-prem infrastructure. Shipped two live AI products at JudgeService, including an automated review-reply LLM service handling over 100k reviews a month with 93% of drafts published unedited. Engineered a multi-agent sentiment analysis platform (0.98 F1) with robust CI/CD pipelines, GitHub Actions integration, structured JSON output, and golden dataset evaluation, driving a 20% lift in client retention. Hands-on across full-stack MLOps, FastAPI REST APIs, Python tooling, and reliable GPU serving.",
+  "skills": [
+    "Python (NumPy, Pandas, SciPy, Keras, NLTK)",
+    "Docker",
+    "CI/CD",
+    "GitHub Actions",
+    "Azure",
+    "AWS",
+    "MLOps",
+    "AI & Deep Learning",
+    "Data Science",
+    "Machine Learning",
+    "SQL",
+    "Vector Databases",
+    "PyTorch",
+    "TensorFlow",
+    "Scikit-learn",
+    "NLP (spaCy, HuggingFace, LangChain)",
+    "Computer Vision",
+    "Generative AI (RAG, Fine-Tuning)",
+    "Git",
+    "REST APIs",
+    "Linux",
+    "Statistics & A/B Testing",
+    "Data Engineering (ETL)",
+    "Problem Solving",
+    "Team Collaboration",
+    "Communication"
+  ]
+}

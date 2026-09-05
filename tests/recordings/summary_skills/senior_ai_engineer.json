@@ -1,0 +1,30 @@
+{
+  "summary": "AI Engineer with years building production LLM systems and RAG pipelines at JudgeService. Shipped end-to-end AI products including a local RAG engine with vector databases and embeddings, and a prompt engineering review response service fine-tuning models with LoRA and QLoRA on AWS. Handled evaluation using golden dataset pipelines and structured extraction for a multi-agent NLP platform (0.98 F1) that contributed to a 20% lift in client retention. Delivered monitored model services handling over 100k reviews a month with 93% published unedited, while mentoring engineers across Docker, CI/CD, and Python.",
+  "skills": [
+    "Python (NumPy, Pandas, SciPy, Keras, NLTK)",
+    "PyTorch",
+    "transformers",
+    "Generative AI (RAG, Fine-Tuning, LoRA)",
+    "Vector Databases",
+    "embeddings",
+    "QLoRA",
+    "prompt engineering",
+    "Cloud Platforms (AWS, Azure)",
+    "SQL",
+    "Docker",
+    "CI/CD (GitHub Actions)",
+    "evaluation",
+    "NLP (spaCy, HuggingFace, LangChain)",
+    "AI & Deep Learning",
+    "Statistics & A/B Testing",
+    "Data Engineering (ETL)",
+    "Machine Learning",
+    "Computer Vision",
+    "REST APIs",
+    "Data Science",
+    "Problem Solving",
+    "Team Collaboration",
+    "MLOps",
+    "Scikit-learn"
+  ]
+}

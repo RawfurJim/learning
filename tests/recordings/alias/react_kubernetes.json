@@ -1,0 +1,16 @@
+{
+  "mappings": [
+    {
+      "jd_skill": "React",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "React is a front-end UI framework and there are no direct front-end frameworks present in the candidate inventory."
+    },
+    {
+      "jd_skill": "Kubernetes",
+      "relation": "none",
+      "inventory_skill": "",
+      "reason": "Kubernetes is a container orchestration tool; Docker in the inventory is containerization, which is not adjacent to orchestration per strict rules."
+    }
+  ]
+}

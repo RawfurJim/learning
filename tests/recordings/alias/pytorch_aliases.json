@@ -1,0 +1,10 @@
+{
+  "mappings": [
+    {
+      "jd_skill": "Torch",
+      "relation": "same",
+      "inventory_skill": "PyTorch",
+      "reason": "Torch and PyTorch refer to the same deep learning library framework."
+    }
+  ]
+}

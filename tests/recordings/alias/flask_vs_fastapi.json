@@ -1,0 +1,10 @@
+{
+  "mappings": [
+    {
+      "jd_skill": "Flask",
+      "relation": "adjacent",
+      "inventory_skill": "FastAPI",
+      "reason": "FastAPI and Flask are both Python web frameworks used for building APIs and web applications."
+    }
+  ]
+}

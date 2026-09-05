@@ -1,0 +1,49 @@
+{
+  "scores": [
+    {
+      "name": "AI-Powered Review Response System",
+      "score": 0.85,
+      "reason": "Demonstrates direct evidence of fine-tuning open-weight LLMs using LoRA/QLoRA and deploying cost-controlled LLM services on AWS production infrastructure."
+    },
+    {
+      "name": "Customer Insight AI Agent & Sentiment Platform",
+      "score": 0.85,
+      "reason": "Directly aligns with structured extraction requirements, open-weights serving, cost optimization, and rigorous evaluation using golden datasets and CI regression gates."
+    },
+    {
+      "name": "RAG Documentation Engine, QA Automation & Mentoring",
+      "score": 0.8,
+      "reason": "Directly addresses core role priorities by implementing local RAG pipelines and vector embeddings while explicitly leading team workshops and mentoring engineers."
+    },
+    {
+      "name": "ResumeBoost (ML-Based Resume Optimiser)",
+      "score": 0.3,
+      "reason": "Demonstrates full-stack ML deployment and active learning loops, but relies on traditional spaCy NER rather than modern LLM pipelines or vector search."
+    },
+    {
+      "name": "Multimodal Fusion to Detect Sarcasm",
+      "score": 0.25,
+      "reason": "Involves PyTorch and BERT transformers for NLP tasks, but lacks production LLM serving, RAG architectures, or cloud infrastructure."
+    },
+    {
+      "name": "Personalized Diet Recommendation System",
+      "score": 0.15,
+      "reason": "Features basic model deployment with Docker and Flask, but utilizes classical KNN algorithms unrelated to LLM applications."
+    },
+    {
+      "name": "Predictive Model for Students' Mathematics Performance",
+      "score": 0.1,
+      "reason": "Focuses strictly on traditional tabular regression models without any connection to language models, vector stores, or production serving."
+    },
+    {
+      "name": "Data Warehouse for Government Spending Insights",
+      "score": 0.05,
+      "reason": "Covers traditional BI and SQL data warehousing without any machine learning or AI engineering context."
+    },
+    {
+      "name": "UK Inflation Impact Analysis",
+      "score": 0.0,
+      "reason": "Unrelated descriptive data analysis and business intelligence project using Excel and Pandas."
+    }
+  ]
+}

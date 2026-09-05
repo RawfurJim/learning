@@ -10,7 +10,7 @@ Epic: [SCRUM-7](https://rawfurjim12.atlassian.net/browse/SCRUM-7) — PRD
 | 2 | [SCRUM-9](https://rawfurjim12.atlassian.net/browse/SCRUM-9) | DOCX round-trip with section classification and formatting-preserving edits | Story | SCRUM-8 | Done |
 | 3 | [SCRUM-10](https://rawfurjim12.atlassian.net/browse/SCRUM-10) | Project knowledge base loader and allowed vocabulary | Task | SCRUM-8 | Done |
 | 4 | [SCRUM-11](https://rawfurjim12.atlassian.net/browse/SCRUM-11) | Agent 1 (JD Intent) and Agent 2 (Keyword Extractor) with Streamlit v0 | Story | SCRUM-8 | Done |
-| 5 | [SCRUM-12](https://rawfurjim12.atlassian.net/browse/SCRUM-12) | Skill matching, project relevance ranking, ATS coverage score | Story | SCRUM-9, 10, 11 | To Do |
+| 5 | [SCRUM-12](https://rawfurjim12.atlassian.net/browse/SCRUM-12) | Skill matching, project relevance ranking, ATS coverage score | Story | SCRUM-9, 10, 11 | Done |
 | 6 | [SCRUM-13](https://rawfurjim12.atlassian.net/browse/SCRUM-13) | Agent 4 (Summary & Skills Writer) + Assembler -> first downloadable .docx | Story | SCRUM-12 | To Do |
 | 7 | [SCRUM-14](https://rawfurjim12.atlassian.net/browse/SCRUM-14) | Agent 3 (Experience Writer) with per-bullet accept/reject | Story | SCRUM-13 | To Do |
 | 8 | [SCRUM-15](https://rawfurjim12.atlassian.net/browse/SCRUM-15) | Cache, token/cost display, provider switch (Groq / Ollama) | Story | SCRUM-13 | To Do |

@@ -53,3 +53,50 @@ class JDKeywords(BaseModel):
     nice_to_have: list[str]
     ats_keywords: list[str]
     responsibilities: list[str]
+
+
+class SkillMatch(BaseModel):
+    """What Jim can truthfully claim for a JD (code, not an LLM output).
+
+    Every JD skill lands in exactly one bucket, spelled as the JD spelled it.
+    `adjacent` skills are suggestions only: they move to `matched` when the user
+    approves them (`approved_adjacent`), never on their own. `aliases` records the
+    inventory term that justified a match or suggestion (`{"Flask": "FastAPI"}`).
+    """
+
+    matched: list[str] = []
+    adjacent: list[str] = []
+    missing: list[str] = []
+    aliases: dict[str, str] = {}
+
+
+AliasRelation = Literal["same", "adjacent", "none"]
+
+
+class AliasMapping(BaseModel):
+    """One JD skill resolved against the inventory by the alias call."""
+
+    jd_skill: str
+    relation: AliasRelation
+    inventory_skill: str = ""
+    reason: str = ""
+
+
+class AliasResolution(BaseModel):
+    """Alias / adjacency call output: one mapping per unmatched JD skill."""
+
+    mappings: list[AliasMapping]
+
+
+class ProjectScore(BaseModel):
+    """Relevance of one knowledge-base project to a JD, 0 (irrelevant) to 1 (central)."""
+
+    name: str
+    score: float
+    reason: str = ""
+
+
+class ProjectRanking(BaseModel):
+    """Project-ranking call output: a raw score per project (professional weighting is applied in code)."""
+
+    scores: list[ProjectScore]

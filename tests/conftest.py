@@ -40,3 +40,12 @@ def scratch_recordings(monkeypatch: pytest.MonkeyPatch, tmp_path: Path) -> Path:
     recordings = tmp_path / "recordings"
     monkeypatch.setenv("LLM_RECORDINGS_DIR", str(recordings))
     return recordings
+
+
+FIXTURES_DIR = Path(__file__).resolve().parent / "fixtures"
+
+
+@pytest.fixture
+def sample_cv_path() -> Path:
+    """Jim's CV fixture built by `tests/fixtures/build_fixture.py`."""
+    return FIXTURES_DIR / "sample_cv.docx"
